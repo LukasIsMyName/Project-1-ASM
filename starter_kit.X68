@@ -55,6 +55,14 @@ WELCOME:
     MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
     TRAP    #15             TRAP AND INTERPRET VALUE IN D0
     BSR     ENDL            BRANCH TO ENDL SUBROUTINE
+    LEA     POTION_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    MOVE.B  #3,D0
+    TRAP    #15
+    MOVE.B  D1,$4000
     RTS                     RETURN FROM WELCOME: SUBROUTINE
 
 *-------------------------------------------------------
@@ -114,7 +122,6 @@ DRAW:
 POTIONS:
     BSR     ENDL
     BSR     DECORATE
-    LEA     POTIONS_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
     BSR     DECORATE
@@ -157,8 +164,10 @@ HUD:
     BSR     ENDL
     BSR     DECORATE
     LEA     HUD_MSG,A1
+    LEA     POTIONS_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
+    CLR     D1
     MOVE.B  (A3),D1     RETRIEVE THE VALUE A3 POINT TO AND MOVE TO D1
     MOVE.B  #3,D0       MOVE LITERAL 3 TO D0
     TRAP    #15         INTREPRET VALUE IN D0, WHICH 3 WHICH DISPLAYS D1
@@ -253,10 +262,12 @@ WELCOME_MSG:    DC.B    '*******************************************************
                 DC.B    'STRATEGY GAMES SUCH AS ZORK, AVALON, OR RABBITS VS PLUMBERS'
                 DC.B    $0D,$0A
                 DC.B    '************************************************************'
-                DC.B    $0D,$0A,0
-POTION_MSG:     DC.B    'POTION ....'
                 DC.B    $0D,$0A
-                DC.B    'ENTER POTION : ',0
+                DC.B    'This is nothing but a test line, to test the build of a string'
+                DC.B    $0D,$0A,0
+POTION_MSG:     DC.B    'HEALTH POTION'
+                DC.B    $0D,$0A
+                DC.B    'ENTER STARTING POTION NUMBER : ',0
 POTIONS_MSG:    DC.B    'NUMBER OF POTIONS : ',0
 WEAPONS_MSG:    DC.B    'EACH QUEST NEED AT LEAST 2 WEAPONS'
                 DC.B    $0D,$0A
@@ -271,8 +282,15 @@ MISS_MSG:       DC.B    'MISS!',0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
 HUD_MSG:        DC.B    'SCORE : ',0
+TEST_MSG:       DC.B    'TEST MESSAGE, DO NOT MIND'
+                DC.B    $0D, $0A
 
 HEALTH:     DS.W    1   PLAYERS HEALTH
 SCORE:      DS.W    1   RESERVE SPACE FOR SCORE
 
     END START
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~
