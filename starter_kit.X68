@@ -54,13 +54,15 @@ WELCOME:
     LEA     WELCOME_MSG,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
     MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
     TRAP    #15             TRAP AND INTERPRET VALUE IN D0
-    BSR     ENDL            BRANCH TO ENDL SUBROUTINE
-    LEA     POTION_MSG,A1
+    LEA     STARTING_INFO,A1
     MOVE.B  #14,D0
     TRAP    #15
     MOVE.B  #4,D0
     TRAP    #15
-    MOVE.B  #3,D0
+    LEA     POTION_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
     TRAP    #15
     MOVE.B  D1,$4000
     RTS                     RETURN FROM WELCOME: SUBROUTINE
@@ -171,6 +173,8 @@ HUD:
     MOVE.B  (A3),D1     RETRIEVE THE VALUE A3 POINT TO AND MOVE TO D1
     MOVE.B  #3,D0       MOVE LITERAL 3 TO D0
     TRAP    #15         INTREPRET VALUE IN D0, WHICH 3 WHICH DISPLAYS D1
+    MOVE.B  #4,D0
+    TRAP    #15
     BSR     DECORATE
     RTS
 
@@ -259,15 +263,28 @@ ENDL:
 CRLF:           DC.B    $0D,$0A,0
 WELCOME_MSG:    DC.B    '************************************************************'
                 DC.B    $0D,$0A
-                DC.B    'STRATEGY GAMES SUCH AS ZORK, AVALON, OR RABBITS VS PLUMBERS'
+                DC.B    '                         Windmillio'
                 DC.B    $0D,$0A
                 DC.B    '************************************************************'
-                DC.B    $0D,$0A
-                DC.B    'This is nothing but a test line, to test the build of a string'
                 DC.B    $0D,$0A,0
-POTION_MSG:     DC.B    'HEALTH POTION'
+STARTING_INFO:  DC.B    '       Welcome to a text, turn based PVP Windmill,'
                 DC.B    $0D,$0A
-                DC.B    'ENTER STARTING POTION NUMBER : ',0
+                DC.B    '       here you will have an opportunity to prove yourself worthy'
+                DC.B    $0D,$0A
+                DC.B    '       by fighting the mighty warriors of Wano kingdom that possesses'
+                DC.B    $0D,$0A
+                DC.B    '       unmatchable swordsman skills and techniques.'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '*Encountering a dialog, to continue press key <ENTER>'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A,0
+POTION_MSG:     DC.B    '                       HEALTH POTIONS'
+                DC.B    $0D,$0A
+                DC.B    '*ENTER STARTING POTION NUMBER : ',0
+                DC.B    $0D,$0A
 POTIONS_MSG:    DC.B    'NUMBER OF POTIONS : ',0
 WEAPONS_MSG:    DC.B    'EACH QUEST NEED AT LEAST 2 WEAPONS'
                 DC.B    $0D,$0A
@@ -282,13 +299,13 @@ MISS_MSG:       DC.B    'MISS!',0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
 HUD_MSG:        DC.B    'SCORE : ',0
-TEST_MSG:       DC.B    'TEST MESSAGE, DO NOT MIND'
-                DC.B    $0D, $0A
+
 
 HEALTH:     DS.W    1   PLAYERS HEALTH
 SCORE:      DS.W    1   RESERVE SPACE FOR SCORE
 
     END START
+
 
 *~Font name~Courier New~
 *~Font size~10~
