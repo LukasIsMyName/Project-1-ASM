@@ -54,17 +54,21 @@ WELCOME:
     LEA     WELCOME_MSG,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
     MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
     TRAP    #15             TRAP AND INTERPRET VALUE IN D0
+    MOVE.B  #4,D0
+    TRAP    #15
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
     LEA     STARTING_INFO,A1
     MOVE.B  #14,D0
     TRAP    #15
     MOVE.B  #4,D0
     TRAP    #15
-    LEA     POTION_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
-    MOVE.B  #4,D0
-    TRAP    #15
-    MOVE.B  D1,$4000
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
     RTS                     RETURN FROM WELCOME: SUBROUTINE
 
 *-------------------------------------------------------
@@ -91,6 +95,19 @@ GAMELOOP:
     BSR     CLEAR_SCREEN    CLEARS THE SCREEN
     RTS                     RETURN FROM GAMELOOP: SUBROUTINE
 
+*-------------------------------------------------------
+*----------------STATS (DISPLAYS STATS)-------------------
+*------------------------------------------------------- 
+STATS:
+    BSR     ENDL
+    BSR     DECORATE
+    LEA     FIGHTING_STYLE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  $4100,D1
+    CMP     #1,D1 
+    BSR     DECORATE
+    RTS
 *-------------------------------------------------------
 *----------------UPDATE QUEST PROGRESS------------------
 *  COMPLETE QUEST
@@ -126,6 +143,12 @@ POTIONS:
     BSR     DECORATE
     MOVE.B  #14,D0
     TRAP    #15
+    LEA     POTION_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    MOVE.B  D1,$4000
     BSR     DECORATE
     RTS
 
@@ -136,9 +159,12 @@ POTIONS:
 WEAPONS:
     BSR     ENDL
     BSR     DECORATE
-    LEA     WEAPONS_MSG,A1
+    LEA     STYLE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    MOVE.B  D1,$4100
     BSR     DECORATE
     RTS
 
@@ -261,36 +287,54 @@ ENDL:
 *-------------------------------------------------------
 
 CRLF:           DC.B    $0D,$0A,0
-WELCOME_MSG:    DC.B    '************************************************************'
+WELCOME_MSG:    DC.B    '       ************************************************************'
                 DC.B    $0D,$0A
-                DC.B    '                         Windmillio'
+                DC.B    '                                Last Wan Standing'
                 DC.B    $0D,$0A
-                DC.B    '************************************************************'
-                DC.B    $0D,$0A,0
-STARTING_INFO:  DC.B    '       Welcome to a text, turn based PVP Windmill,'
+                DC.B    '       ************************************************************'
+                DC.B    $0D,$0A
+                DC.B    '                           PRESS <ENTER> TO START',0
+STARTING_INFO:  DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '       Welcome to a text, turn based PVE fighting simulator,'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '       here you will have an opportunity to prove yourself worthy'
                 DC.B    $0D,$0A
-                DC.B    '       by fighting the mighty warriors of Wano kingdom that possesses'
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '       by fighting the mighty samurais of Wano kingdom that possesses'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '       unmatchable swordsman skills and techniques.'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '*Encountering a dialog, to continue press key <ENTER>'
+                DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
-                DC.B    $0D,$0A,0
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '*Encountering a dialog, to continue press key <ENTER>',0
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
 POTION_MSG:     DC.B    '                       HEALTH POTIONS'
                 DC.B    $0D,$0A
                 DC.B    '*ENTER STARTING POTION NUMBER : ',0
                 DC.B    $0D,$0A
 POTIONS_MSG:    DC.B    'NUMBER OF POTIONS : ',0
-WEAPONS_MSG:    DC.B    'EACH QUEST NEED AT LEAST 2 WEAPONS'
+STYLE_MSG:    DC.B    'SELECT YOUR FIGHTING STYLE: '
                 DC.B    $0D,$0A
-                DC.B    'MINIMUM REQUIREMENT IS 2 I.E. SWORD X 1 AND SPEER X 1.'
+                DC.B    '1: Three swords style(///Santoryu)'
                 DC.B    $0D,$0A
-                DC.B    'ENTER # OF WEAPONS : ',0
+                DC.B    '2: Two swords style(//Nitoryu)'
+                DC.B    $0D,$0A
+                DC.B    '3: One sword style(/Ittoryu)'
+                DC.B    $0D,$0A,0
 GAMEPLAY_MSG:   DC.B    'ADD GAMEPLAY !',0
 UPDATE_MSG:     DC.B    'UPDATE GAMEPLAY !',0
 DRAW_MSG:       DC.B    'DRAW SCREEN !',0
@@ -299,12 +343,14 @@ MISS_MSG:       DC.B    'MISS!',0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
 HUD_MSG:        DC.B    'SCORE : ',0
-
+FIGHTING_STYLE_MSG:     DC.B    'Your fighting style is : ',0
 
 HEALTH:     DS.W    1   PLAYERS HEALTH
 SCORE:      DS.W    1   RESERVE SPACE FOR SCORE
 
+
     END START
+
 
 
 *~Font name~Courier New~
