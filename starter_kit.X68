@@ -182,7 +182,6 @@ GAMEPLAY:
     BSR     ENDL
     BSR     DECORATE
     BSR     DECORATE
-    BSR     COLLISION
     RTS
 
 *-------------------------------------------------------
@@ -195,22 +194,6 @@ HUD:
     BSR     DECORATE
     CLR     D1
     BSR     DECORATE
-    RTS
-
-*-------------------------------------------------------
-*-----------------------BEING ATTACKED------------------
-* THIS COULD BE USED FOR COLLISION DETECTION
-*-------------------------------------------------------
-COLLISION:
-    MOVE.B  #MINE_LOC,D1
-    CMP     #100,D1 IS( X == 100)?
-	BNE     COLLISION_MISS IF X IS EQUAL TO 100, THEN HIT
-COLLISION_HIT:
-    *HIT
-    RTS
-    
-COLLISION_MISS:
-    *MISS
     RTS
 
 *-------------------------------------------------------
@@ -276,34 +259,52 @@ ENDL:
 CRLF:           DC.B    $0D,$0A,0
 WELCOME_MSG:    DC.B    '       ************************************************************'
                 DC.B    $0D,$0A
-                DC.B    '                                Last Wan Standing'
+                DC.B    '                                Wan mission '
                 DC.B    $0D,$0A
                 DC.B    '       ************************************************************'
                 DC.B    $0D,$0A
                 DC.B    '                           PRESS <ENTER> TO START',0
 STARTING_INFO:  DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '       Welcome to a text, turn based PVE fighting simulator,'
+                DC.B    '     Welcome swordsman-gozaru,'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '       here you will have an opportunity to prove yourself worthy'
+                DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial beings from space,'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '       by fighting the mighty samurais of Wano kingdom that possesses'
+                DC.B    '     that are a threat, not even to the Wano kingdom, but the world itself!'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '       unmatchable swordsman skills and techniques.'
+                DC.B    '     Amanto feeds off the oxygen in the earth leaving the air with pure Carbon Dioxide.'
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '                                                   '
+                DC.B    '     Your (E)mission is to fight the Amanto using the swordstyles you have honed throughout the years,'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
+                DC.B    '     by using the mythical swords made out of Di-shards, the mixture of Amanto brought metal and ancient shards'
+                DC.B    $0D,$0A
                 DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
+                DC.B    $0D,$0A
+                DC.B    '     With the combination of combat skills and mythical swords in your palms, you have a chance to bring the '
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '     invaders and the Carbon emission down, all rests on your shoulders-gozaru.                                            '
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
                 DC.B    $0D,$0A
                 DC.B    '*Encountering a dialog, to continue press key <ENTER>',0
 POTION_MSG:     DC.B    '                       HEALTH POTIONS'
