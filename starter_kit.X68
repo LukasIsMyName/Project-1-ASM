@@ -1,3 +1,10 @@
+* NAME: LUKAS SUMKAUSKAS
+* ID: C00263149
+* DATE: 2022 Feb
+* KNOWN BUGS: None
+* Description: Emission fighting simulator with multiple I/O, 
+* where you pick swords to fight the carbon emission instead of the standard.
+
 *-------------------------------------------------------
 * STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
 *-------------------------------------------------------
@@ -5,23 +12,17 @@
     ORG $1000
 
 *-------------------------------------------------------
-*CHOOSE TO BE A PLUMBER OR A RABBIT 
-*-------------------------------------------------------
-
-*-------------------------------------------------------
 *VALIDATION VALUES TO BE USED, MODIFY AS NEEDED
 *ADD ADDITIONAL VALIDATION VALUES AS REQUIRED
 *-------------------------------------------------------
-EXIT        EQU 0      USED TO EXIT ASSEMBLY PROGRAM
-MIN_POTIONS EQU 1      MIN NUMBER OF POTIONS
-MAX_POTIONS EQU 9      MAX NUMBER OF POTIONS
-MIN_WEAPONS EQU 1      MIN WEAPONS
-MAX_WEAPONS EQU 3      MAX WEAPONS
-WIN_POINT   EQU 5      POINTS ACCUMILATED ON WIN
-LOSE_POINT  EQU 8      POINTS DEDUCTED ON A LOSS
+EXIT              EQU 0      USED TO EXIT ASSEMBLY PROGRAM
 
-MINE_LOC    EQU 100    USED BELOW FOR SOME SIMPLE COLLISION DETECTION USING CMP
-                       * EXAMPLE FOR A HIT
+MAX_WEAPONS       EQU 3      MAX WEAPONS
+WIN_POINT         EQU 5      POINTS ACCUMILATED ON WIN
+LOSE_STAMINA      EQU 5      POINTS DEDUCTED ON A LOSS
+DAMAGE_EMISSION   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION
+EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
+
 
 
 *START OF GAME
@@ -32,6 +33,7 @@ START:
 
     BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
     BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
+    BSR     STATS
     BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 *GAME LOOP
     ORG     $3000      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 3000 ONWARDS
@@ -105,7 +107,18 @@ STATS:
     MOVE.B  #14,D0
     TRAP    #15
     MOVE.B  $4100,D1
-    CMP     #1,D1 
+    CMP     #1,D1
+    BSR     ENDL
+    LEA     POTIONS_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    CLR     D1
+    MOVE.B  (A3),D7     RETRIEVE THE VALUE A3 POINT TO AND MOVE TO D1
+    MOVE.B  D7,D1
+    MOVE.B  #3,D0       MOVE LITERAL 3 TO D0
+    TRAP    #15         INTREPRET VALUE IN D0, WHICH 3 WHICH DISPLAYS D1
+    MOVE.B  #4,D0
+    TRAP    #15 
     BSR     DECORATE
     RTS
 *-------------------------------------------------------
@@ -115,9 +128,6 @@ STATS:
 UPDATE:
     BSR     ENDL            PRINT A CR AND LF
     BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
-    LEA     UPDATE_MSG,A1   
-    MOVE.B  #14,D0
-    TRAP    #15
     BSR     DECORATE
     RTS
 *-------------------------------------------------------
@@ -128,9 +138,6 @@ UPDATE:
 DRAW:
     BSR     ENDL
     BSR     DECORATE
-    LEA     DRAW_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
     BSR     DECORATE
     RTS
 
@@ -174,11 +181,6 @@ WEAPONS:
 GAMEPLAY:
     BSR     ENDL
     BSR     DECORATE
-    LEA     GAMEPLAY_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
-    MOVE.B  #4,D0
-    TRAP    #15
     BSR     DECORATE
     BSR     COLLISION
     RTS
@@ -191,16 +193,7 @@ HUD:
 
     BSR     ENDL
     BSR     DECORATE
-    LEA     HUD_MSG,A1
-    LEA     POTIONS_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
     CLR     D1
-    MOVE.B  (A3),D1     RETRIEVE THE VALUE A3 POINT TO AND MOVE TO D1
-    MOVE.B  #3,D0       MOVE LITERAL 3 TO D0
-    TRAP    #15         INTREPRET VALUE IN D0, WHICH 3 WHICH DISPLAYS D1
-    MOVE.B  #4,D0
-    TRAP    #15
     BSR     DECORATE
     RTS
 
@@ -214,16 +207,10 @@ COLLISION:
 	BNE     COLLISION_MISS IF X IS EQUAL TO 100, THEN HIT
 COLLISION_HIT:
     *HIT
-    LEA     HIT_MSG,A1
-    MOVE    #14,D0
-    TRAP    #15
     RTS
     
 COLLISION_MISS:
     *MISS
-    LEA     MISS_MSG,A1
-    MOVE    #14,D0
-    TRAP    #15
     RTS
 
 *-------------------------------------------------------
@@ -319,15 +306,11 @@ STARTING_INFO:  DC.B    ''
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '*Encountering a dialog, to continue press key <ENTER>',0
-                DC.B    $0D,$0A
-                DC.B    '                                                   '
-                DC.B    $0D,$0A
 POTION_MSG:     DC.B    '                       HEALTH POTIONS'
                 DC.B    $0D,$0A
                 DC.B    '*ENTER STARTING POTION NUMBER : ',0
-                DC.B    $0D,$0A
 POTIONS_MSG:    DC.B    'NUMBER OF POTIONS : ',0
-STYLE_MSG:    DC.B    'SELECT YOUR FIGHTING STYLE: '
+STYLE_MSG:      DC.B    'SELECT YOUR FIGHTING STYLE: '
                 DC.B    $0D,$0A
                 DC.B    '1: Three swords style(///Santoryu)'
                 DC.B    $0D,$0A
@@ -335,21 +318,17 @@ STYLE_MSG:    DC.B    'SELECT YOUR FIGHTING STYLE: '
                 DC.B    $0D,$0A
                 DC.B    '3: One sword style(/Ittoryu)'
                 DC.B    $0D,$0A,0
-GAMEPLAY_MSG:   DC.B    'ADD GAMEPLAY !',0
-UPDATE_MSG:     DC.B    'UPDATE GAMEPLAY !',0
-DRAW_MSG:       DC.B    'DRAW SCREEN !',0
-HIT_MSG:        DC.B    'STRIKE!',0
-MISS_MSG:       DC.B    'MISS!',0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
 HUD_MSG:        DC.B    'SCORE : ',0
 FIGHTING_STYLE_MSG:     DC.B    'Your fighting style is : ',0
-
+                        
 HEALTH:     DS.W    1   PLAYERS HEALTH
 SCORE:      DS.W    1   RESERVE SPACE FOR SCORE
 
 
     END START
+
 
 
 
