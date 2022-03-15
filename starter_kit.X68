@@ -232,6 +232,18 @@ UPDATE:
     ADD.W   #1,D1
     MOVE.W  D1,$9000
     LEA     $9000,A6
+                             *INCREMENTS THE EMISSION
+    CLR     D1
+    MOVE.W  (A4),D1
+    ADD.W   #EMISSION_INC,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                             *INCREMENTS THE ENEMIES
+    CLR     D1
+    MOVE.W  (A3),D1
+    ADD.W   #1,D1
+    MOVE.W  D1,$5000
+    LEA     $5000,A3
     RTS
 *-------------------------------------------------------
 *-----------------DRAW QUEST UPDATES--------------------
@@ -483,6 +495,7 @@ DAYS_MSG:               DC.B    'Day: ',0
 
 
     END START
+
 
 
 
