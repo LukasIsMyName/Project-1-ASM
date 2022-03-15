@@ -129,7 +129,7 @@ STATS:
     LEA     STARTER_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
-    BSR     DECORATE
+    BSR     ENDL
     LEA     FIGHTING_STYLE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -147,9 +147,13 @@ STATS:
     
 INITIALS_D:
     BSR     EMISSION_DISPLAY
+    BSR     ENDL
     BSR     ENEMY_DISPLAY
+    BSR     ENDL
     BSR     STAMINA_DISPLAY
+    BSR     ENDL
     BSR     MONEY_DISPLAY
+    BSR     ENDL
     BSR     DAYS_DISPLAY
     BSR     HALT
     JMP     REPLAY
@@ -215,18 +219,21 @@ PICK_1:
     LEA     FIRST_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     BSR     INITIALS_D
     RTS
 PICK_2:
     LEA     SECOND_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     BSR     INITIALS_D
     RTS
 PICK_3:
     LEA     THIRD_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     BSR     INITIALS_D
     RTS
  
@@ -566,6 +573,7 @@ WEAPONS:
     BSR     CLEAR_SCREEN
     BSR     ENDL
     LEA     STYLE_TITLE,A1
+    MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
     LEA     STYLE_MSG,A1
@@ -744,7 +752,7 @@ REPLAY:
     BEQ     END
     
     CMP     #STATISTICS,D1
-    BEQ     INITIALS_D
+    BEQ     STATS
     
     CMP     #SHOP,D1
     BEQ     SHOP_ENTER
@@ -846,15 +854,30 @@ STARTING_INFO:  DC.B    '---------------------------------------.---------------
                 DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
                 DC.B    '<ENTER> To continue..',0
-STYLE_TITLE:    DC.B    '  ----------           STYLE SELECTION           ----------',0
-STYLE_MSG:      DC.B    '                 SELECT YOUR FIGHTING STYLE: '
+STYLE_TITLE:    DC.B    ' ------------------------------- STYLE SELECTOR -------------------------------',0
+STYLE_MSG:      DC.B    '                           SELECT YOUR FIGHTING STYLE '
                 DC.B    $0D,$0A
-                DC.B    '              1: Three swords style(///Santoryu)'
+                DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '                2: Two swords style(//Nitoryu)'
+                DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '                 3: One sword style(/Ittoryu)'
-                DC.B    $0D,$0A,0
+                DC.B    '                     - 1: Three swords style(///Santoryu) -'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                      - 2: Two swords style(//Nitoryu) -'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                       - 3: One sword style(/Ittoryu) -'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    '                                       ',0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:
 
@@ -875,21 +898,23 @@ REPLAY_MSG:
                 DC.B    '                             ',0
 
 HUD_MSG:        DC.B    'SCORE : ',0
-FIGHTING_STYLE_MSG:     DC.B    'Your fighting style is : ',0
+FIGHTING_STYLE_MSG:     DC.B    '               > - Your fighting style is : ',0
 FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
 SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
 THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
-EMISSION:               DC.B    'EMISSION: ',0
-STARTER_MSG:            DC.B    '      INFO: ',0
-ENEMIES_MSG:            DC.B    'AMANTO ALIVE: ',0
-STAMINA_MSG:            DC.B    'STAMINA: ',0
-MONEY_MSG:              DC.B    'BALANCE: ',0
+EMISSION:               DC.B    '                                > - EMISSION: ',0
+STARTER_MSG:            DC.B    '--------------------------------------INFO--------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '',0
+ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
+STAMINA_MSG:            DC.B    '                                > - STAMINA: ',0
+MONEY_MSG:              DC.B    '                                > - BALANCE: ',0
 ASK_MSG:                DC.B    '                        Play?'
                         DC.B    $0D,$0A
                         DC.B    '                 To Play enter any number            '
                         DC.B    $0D,$0A
                         DC.B    '                    To EXIT enter 0           ',0
-DAYS_MSG:               DC.B    'Day: ',0
+DAYS_MSG:               DC.B    '                                 > - Day: ',0
 BATTLEFIELD_MSG:        DC.B    '   ----------       THE BATTLEFIELD       ----------                 '
                         DC.B    $0D,$0A
                         DC.B    '                                                 '
@@ -993,7 +1018,7 @@ LORE1_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
-                        DC.B    '<ENTER> To continue..        ',0
+                        DC.B    '<ENTER> To continue..',0
 LORE2_MSG:              DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
                         DC.B    '                    -------I--  Two swords style  --I-------                    '
@@ -1056,7 +1081,7 @@ LORE2_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
-                        DC.B    '<ENTER> To continue..        ',0
+                        DC.B    '<ENTER> To continue..',0
                         
 LORE3_MSG:              DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
@@ -1120,7 +1145,7 @@ LORE3_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
-                        DC.B    '<ENTER> To continue..        ',0
+                        DC.B    '<ENTER> To continue..',0
 RECONSIDER_MSG:         DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
                         DC.B    ''
