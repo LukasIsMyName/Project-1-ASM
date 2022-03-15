@@ -1,3 +1,4 @@
+
 * NAME: LUKAS SUMKAUSKAS
 * ID: C00263149
 * DATE: 2022 Feb
@@ -16,22 +17,36 @@
 *ADD ADDITIONAL VALIDATION VALUES AS REQUIRED
 *-------------------------------------------------------
 EXIT              EQU 0      USED TO EXIT ASSEMBLY PROGRAM
+NEXT_DAY          EQU 4      USED TO CYCLE TO THE NEXT DAY
+STATISTICS        EQU 1
+SHOP              EQU 2
+ATTACK            EQU 3
 
-MAX_WEAPONS       EQU 3      MAX WEAPONS
-WIN_POINT         EQU 5      POINTS ACCUMILATED ON WIN
-LOSE_STAMINA      EQU 5      POINTS DEDUCTED ON A LOSS
-DAMAGE_EMISSION   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION
 EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
 ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
 MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
+STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
+DAYS_COUNT        EQU 0      INITIAL DAYS PASSED COUNT
 
+*--------------------------INCREMENTS----------------------------------*
+DAMAGE_EMISSION   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION
+EMISSION_INC      EQU 40     EMISSION INCREMENT FOR EACH ENEMY
+MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
+STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
+STAMINA_DEC       EQU 5      STAMINA DEDUCTED ON A KILL
 
 *START OF GAME
 START:
     MOVE.W  #EMISSION_COUNT,$6000 EMISSION COUNT PLACED IN MEMORY 6000
     MOVE.W  #ENEMY_COUNT,$5000    ENEMIES COUNT PLACED IN MEMORY 5000
+    MOVE.B  #STAMINA_COUNT,$7000  STAMINA COUNT PLACED IN 7000
+    MOVE.W  #MONEY_COUNT,$8000    MONEY COUNT PLACED IN 8000
+    MOVE.W  #DAYS_COUNT,$9000     DAYS COUNT PLACED IN MEMORY 9000
     LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
+    LEA     $7000,A2
+    LEA     $8000,A5
+    LEA     $9000,A6
 
     BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
     BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
@@ -86,14 +101,8 @@ INPUT:
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
-    BSR     UPDATE          BRANCH TO UPDATE GAME SUBROUTINE 
-    BSR     CLEAR_SCREEN    CLEARS THE SCREEN         
-    BSR     DRAW            BRANCH TO DRAW SCREEN SUBROUTINE
-    BSR     CLEAR_SCREEN    CLEARS THE SCREEN
-    BSR     GAMEPLAY        BRANCH TO GAMEPLAY SUBROUTINE
-    BSR     CLEAR_SCREEN    CLEARS THE SCREEN
-    BSR     HUD             BRANCH TO DISPLAY HUD SUBROUTINE
-    BSR     CLEAR_SCREEN    CLEARS THE SCREEN
+    BSR     UPDATE
+    BSR     CLEAR_SCREEN
     BSR     REPLAY          BRANCH TO REPLAY GAME SUBROUTINE
     BSR     CLEAR_SCREEN    CLEARS THE SCREEN
     RTS                     RETURN FROM GAMELOOP: SUBROUTINE
@@ -104,6 +113,7 @@ GAMELOOP:
 STATS:
     BSR     ENDL
     BSR     DECORATE
+    BSR     CLEAR_SCREEN
     LEA     STARTER_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -123,12 +133,16 @@ STATS:
     CMP     #2,D1       IS D1 > 2?
     BGT     PICK_3
     
-    BSR     DECORATE
-    BSR     ENDL
-    MOVE.B  #4,D0
-    TRAP    #15 
-    BSR     DECORATE
-                         *** DISPLAY THE INITIAL EMISSION 
+INITIALS_D:
+    BSR     EMISSION_DISPLAY
+    BSR     ENEMY_DISPLAY
+    BSR     STAMINA_DISPLAY
+    BSR     MONEY_DISPLAY
+    BSR     DAYS_DISPLAY
+    BSR     HALT
+    JMP     REPLAY
+   
+EMISSION_DISPLAY:                         *** DISPLAY THE INITIAL EMISSION 
     CLR     D1
     BSR     ENDL
     MOVE.W  (A4),D6
@@ -138,7 +152,9 @@ STATS:
     TRAP    #15
     MOVE.W  #3,D0
     TRAP    #15
-                         *** DISPLAY THE INITIAL ENEMY COUNT 
+    RTS
+    
+ENEMY_DISPLAY:                         *** DISPLAY THE INITIAL ENEMY COUNT 
     CLR     D1
     BSR     ENDL
     MOVE.W  (A3),D5
@@ -150,23 +166,56 @@ STATS:
     TRAP    #15
     RTS
     
+STAMINA_DISPLAY:
+    CLR     D1
+    BSR     ENDL
+    MOVE.B  (A2),D4
+    MOVE.B  D4,D1
+    LEA     STAMINA_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #3,D0
+    TRAP    #15
+    RTS
+MONEY_DISPLAY:
+    CLR     D1
+    BSR     ENDL
+    MOVE.W  (A5),D3
+    MOVE.W  D3,D1
+    LEA     MONEY_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #3,D0
+    TRAP    #15
+    RTS
+DAYS_DISPLAY:
+    CLR     D1
+    BSR     ENDL
+    MOVE.W  (A6),D1
+    LEA     DAYS_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #3,D0
+    TRAP    #15
+    RTS
+    
 PICK_1:
     LEA     FIRST_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
-    BSR     ENDL
+    BSR     INITIALS_D
     RTS
 PICK_2:
     LEA     SECOND_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
-    BSR     ENDL
+    BSR     INITIALS_D
     RTS
 PICK_3:
     LEA     THIRD_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
-    BSR     ENDL
+    BSR     INITIALS_D
     RTS
  
 *-------------------------------------------------------
@@ -177,6 +226,12 @@ UPDATE:
     BSR     ENDL            PRINT A CR AND LF
     BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
     BSR     DECORATE
+                             *INCREMENTS THE DAYS
+    CLR     D1
+    MOVE.W  (A6),D1
+    ADD.W   #1,D1
+    MOVE.W  D1,$9000
+    LEA     $9000,A6
     RTS
 *-------------------------------------------------------
 *-----------------DRAW QUEST UPDATES--------------------
@@ -258,20 +313,45 @@ CLEAR_SCREEN:
     MOVE.W  #$FF00,D1
     TRAP    #15
     RTS
+HALT:
+    MOVE.B  #4,D0
+    TRAP    #15
+    RTS
+ASK_PLAY:
+    BSR     ENDL
+    BSR     DECORATE
+    BSR     ENDL
+    LEA     ASK_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     DECORATE
+    BSR     HALT
+    CMP     #EXIT,D1
+    BEQ     END
+    RTS
 *-------------------------------------------------------
 *------------------------REPLAY-------------------------
 *-------------------------------------------------------
 REPLAY:
     BSR     ENDL
+    BSR     CLEAR_SCREEN
     LEA     REPLAY_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
     
     MOVE.B  #4,D0
     TRAP    #15
-
+    
     CMP     #EXIT,D1
-    BEQ     END         IF SR Z REGISTER CONTAINS 1 BEQ => BRANCH EQUALS
+    BEQ     END
+    
+    CMP     #STATISTICS,D1
+    BEQ     INITIALS_D
+    
+    CMP     #NEXT_DAY,D1
+    BEQ     GAMELOOP
+    
     BSR     GAMELOOP
 
 ENDL:
@@ -366,16 +446,44 @@ STYLE_MSG:      DC.B    'SELECT YOUR FIGHTING STYLE: '
                 DC.B    '3: One sword style(/Ittoryu)'
                 DC.B    $0D,$0A,0
 LOOP_MSG:       DC.B    '.',0
-REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
+REPLAY_MSG:
+
+
+                DC.B    '   ----------       What do you wish to do?       ----------                                       '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
+                DC.B    $0D,$0A
+                DC.B    '               *Input: 1 to display the current statistics                                                 '
+                DC.B    $0D,$0A
+                DC.B    '               *Input: 2 to open the shop menu                                                 '
+                DC.B    $0D,$0A
+                DC.B    '               *Input: 3 to fight the enemies                                                 '
+                DC.B    $0D,$0A
+                DC.B    '               *Input: 4 to get to the next day'
+                DC.B    $0D,$0A
+                DC.B    '               *Input: 0 to EXIT the game                                                 '
+                DC.B    '                             ',0
+
 HUD_MSG:        DC.B    'SCORE : ',0
 FIGHTING_STYLE_MSG:     DC.B    'Your fighting style is : ',0
 FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
 SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
 THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
 EMISSION:               DC.B    'EMISSION: ',0
-STARTER_MSG:            DC.B    '      Your starter: ',0
+STARTER_MSG:            DC.B    '      INFO: ',0
 ENEMIES_MSG:            DC.B    'ENEMIES ALIVE: ',0
+STAMINA_MSG:            DC.B    'STAMINA: ',0
+MONEY_MSG:              DC.B    'BALANCE: ',0
+ASK_MSG:                DC.B    '                        Play?'
+                        DC.B    $0D,$0A
+                        DC.B    '                 To Play enter any number            '
+                        DC.B    $0D,$0A
+                        DC.B    '                    To EXIT enter 0           ',0
+DAYS_MSG:               DC.B    'Day: ',0
+
+
     END START
+
 
 
 
