@@ -37,7 +37,9 @@ DAMAGE_EMISSION_THREE   EQU 250  BASE DAMAGE MULTIPLIER FOR EMISSION THREE SWORD
 EMISSION_INC      EQU 40     EMISSION INCREMENT FOR EACH ENEMY
 MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
 STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
-STAMINA_DEC       EQU 5      STAMINA DEDUCTED ON A KILL
+STAMINA_DEC_1     EQU 2      STAMINA DEDUCTED ON A KILL WITH 1 SWORD
+STAMINA_DEC_2     EQU 3      STAMINA DEDUCTED ON A KILL WITH 2 SWORDS 
+STAMINA_DEC_3     EQU 5      STAMINA DEDUCTED ON A KILL WITH 3 SWORDS 
 
 *START OF GAME
 START:
@@ -220,22 +222,46 @@ PICK_1:
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
+    
+    LEA     STYLE_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
+    MOVE.W  #DAMAGE_EMISSION_THREE,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL       
     BSR     INITIALS_D
-    RTS
 PICK_2:
     LEA     SECOND_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
+    
+    LEA     STYLE_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
+    MOVE.W  #DAMAGE_EMISSION_TWO,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
     BSR     INITIALS_D
-    RTS
 PICK_3:
     LEA     THIRD_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
+    
+    LEA     STYLE_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
+    MOVE.W  #DAMAGE_EMISSION_ONE,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
     BSR     INITIALS_D
-    RTS
  
 *-------------------------------------------------------
 *----------------UPDATE QUEST PROGRESS------------------
@@ -329,7 +355,9 @@ ATTACK_ENEMY:
     MOVE.B  $7000,D1
     CMP     #0,D1
     BEQ     NO_STAMINA
-                            *IF OUT OF STAMINA, DISPLAY
+    CMP     #1,D1
+    BEQ     NO_STAMINA
+                            *IF OUT/OR CRITICALLY LOW STAMINA, DISPLAY
                             *IF NOT, CONTINUE
                             
                             *DECREMENTS THE ENEMIES COUNT
@@ -368,6 +396,13 @@ ATTACK_ENEMY:
     BEQ     SUB_ONE_SWORD
     RTS
 SUB_THREE_SWORDS:
+    CLR     D1
+    CLR     D3
+    MOVE.B  STAMINA_DEC_3,D3
+    MOVE.B  $7000,D1
+    CMP     D3,D1
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+
                                 *DECREMENTS EMISSION TOTAL    
     MOVE.W  (A4),D1
     SUB.W   #DAMAGE_EMISSION_THREE,D1
@@ -381,13 +416,20 @@ SUB_THREE_SWORDS:
     
                                  *DECREMENTS STAMINA
     MOVE.B  $7000,D1
-    SUB.B   #STAMINA_DEC,D1
+    SUB.B   #STAMINA_DEC_3,D1
     MOVE.B  D1,$7000
     LEA     $7000,A1
 
     
     JMP     ATTACK_EMISSION
-SUB_TWO_SWORDS:     
+SUB_TWO_SWORDS:
+    CLR     D1
+    CLR     D3
+    MOVE.B  STAMINA_DEC_2,D3
+    MOVE.B  $7000,D1
+    CMP     D3,D1
+    BLT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+     
     MOVE.W  (A4),D1
     SUB.W   #DAMAGE_EMISSION_TWO,D1
     MOVE.W  D1,$6000
@@ -400,12 +442,19 @@ SUB_TWO_SWORDS:
     
                                     *DECREMENTS STAMINA
     MOVE.B  $7000,D1
-    SUB.B   #STAMINA_DEC,D1
+    SUB.B   #STAMINA_DEC_2,D1
     MOVE.B  D1,$7000
     LEA     $7000,A1
     
     JMP     ATTACK_EMISSION
-SUB_ONE_SWORD:     
+SUB_ONE_SWORD:
+    CLR     D1
+    CLR     D3
+    MOVE.B  STAMINA_DEC_1,D3
+    MOVE.B  $7000,D1
+    CMP     D3,D1
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+         
     MOVE.W  (A4),D1
     SUB.W   #DAMAGE_EMISSION_ONE,D1
     MOVE.W  D1,$6000
@@ -417,7 +466,7 @@ SUB_ONE_SWORD:
     LEA     $11000,A1
                                     *DECREMENTS STAMINA
     MOVE.B  $7000,D1
-    SUB.B   #STAMINA_DEC,D1
+    SUB.B   #STAMINA_DEC_1,D1
     MOVE.B  D1,$7000
     LEA     $7000,A1
     
@@ -457,7 +506,7 @@ SUB_THREE_SWORDS_DI:
                                  *DECREMENTS STAMINA
     CLR     D2
     CLR     D3
-    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #STAMINA_DEC_3,D2
     MOVE.B  #4,D3
     MULU    D2,D3
     MOVE.B  $7000,D1
@@ -492,7 +541,7 @@ SUB_TWO_SWORDS_DI:
                                    *DECREMENTS STAMINA
     CLR     D2
     CLR     D3
-    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #STAMINA_DEC_2,D2
     MOVE.B  #3,D3
     MULU    D2,D3
     MOVE.B  $7000,D1
@@ -528,7 +577,7 @@ SUB_ONE_SWORD_DI:
                                        *DECREMENTS STAMINA
     CLR     D2
     CLR     D3
-    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #STAMINA_DEC_1,D2
     MOVE.B  #2,D3
     MULU    D2,D3
     MOVE.B  $7000,D1
@@ -548,6 +597,7 @@ SUB_ONE_SWORD_DI:
     MOVE.W  D1,$6000
     LEA     $6000,A4
                                 *INCREMENTS EMISSION SLASHED COUNT
+    CLR     D1
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
@@ -898,12 +948,14 @@ REPLAY_MSG:
                 DC.B    '                             ',0
 
 HUD_MSG:        DC.B    'SCORE : ',0
-FIGHTING_STYLE_MSG:     DC.B    '               > - Your fighting style is : ',0
+FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
+STYLE_DAMAGE_MSG:       DC.B    '                 > - Your base damage: ',0
+STAMINA_USE_MSG         DC.B    '                 > - Ability stamina use: ',0
 FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
 SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
 THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
-EMISSION:               DC.B    '                                > - EMISSION: ',0
-STARTER_MSG:            DC.B    '--------------------------------------INFO--------------------------------------'
+EMISSION:               DC.B    '                              > - C.EMISSION: ',0
+STARTER_MSG:            DC.B    '.-----------------------------------. STATS .----------------------------------.'
                         DC.B    $0D,$0A
                         DC.B    '',0
 ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
