@@ -26,7 +26,7 @@ EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
 ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
 MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
 STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
-DAYS_COUNT        EQU 0      INITIAL DAYS PASSED COUNT
+DAYS_COUNT        EQU 1      INITIAL DAYS PASSED COUNT
 ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
 EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
 
@@ -55,11 +55,13 @@ START:
     LEA     $9000,A6
 
     BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
+    BSR     DECORATE
     BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
+    BSR     LORE
     BSR     STATS
     BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 *GAME LOOP
-    ORG     $3000      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 3000 ONWARDS
+    ORG     $2000      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 2000 ONWARDS
 
 *-------------------------------------------------------
 *-------------------GAME SUBROUTINE---------------------
@@ -75,12 +77,12 @@ END:
 *-------------------WELCOME SUBROUTINE------------------
 *-------------------------------------------------------
 WELCOME:
-    BSR     ENDL            BRANCH TO ENDL SUBROUTINE
     LEA     WELCOME_MSG,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
     MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
     TRAP    #15             TRAP AND INTERPRET VALUE IN D0
     MOVE.B  #4,D0
     TRAP    #15
+    BSR     CLEAR_SCREEN
     BSR     DECORATE
     BSR     CLEAR_SCREEN
     BSR     DECORATE
@@ -107,6 +109,7 @@ INPUT:
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
+    BSR     CLEAR_SCREEN
     BSR     UPDATE
     BSR     CLEAR_SCREEN
     BSR     REPLAY          BRANCH TO REPLAY GAME SUBROUTINE
@@ -117,9 +120,12 @@ GAMELOOP:
 *----------------STATS (DISPLAYS STATS)-------------------
 *------------------------------------------------------- 
 STATS:
-    BSR     ENDL
+    BSR     CLEAR_SCREEN
     BSR     DECORATE
     BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
     LEA     STARTER_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -258,13 +264,15 @@ UPDATE:
     LEA     $7000,A1
     RTS
 *-------------------------------------------------------
-*-----------------DRAW QUEST UPDATES--------------------
-* DRAW THE GAME PROGRESS INFORMATION, STATUS REGARDING
-* QUEST
+*-----------------ATTACK MODE--------------------
 *------------------------------------------------------- 
 ATTACK_EMISSION:
-    BSR     ENDL
     BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
     BSR     DECORATE
     LEA     BATTLEFIELD_MSG,A1
     MOVE.B  #14,D0
@@ -551,25 +559,41 @@ SUB_ONE_SWORD_DI:
 * NUMBER OF WEAPONS
 *-------------------------------------------------------   
 WEAPONS:
-    BSR     ENDL
+    BSR     CLEAR_SCREEN
     BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    LEA     STYLE_TITLE,A1
+    TRAP    #15
+    BSR     ENDL
     LEA     STYLE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
     MOVE.B  #4,D0
     TRAP    #15
     MOVE.B  D1,$4100
-    BSR     DECORATE
-    RTS
+    JMP     LORE
 
 *-------------------------------------------------------
-*---GAME PLAY (QUEST PROGRESS)--------------------------
+*-------------------------SHOP--------------------------
 *------------------------------------------------------- 
-GAMEPLAY:
+SHOP_ENTER:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
     BSR     ENDL
     BSR     DECORATE
+    LEA     SHOP_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     MONEY_DISPLAY
+    BSR     HALT
     BSR     DECORATE
-    RTS
+    JMP     REPLAY
 
 *-------------------------------------------------------
 *-----------------HEADS UP DISPLAY (SCORE)--------------
@@ -633,15 +657,85 @@ ASK_PLAY:
     CMP     #EXIT,D1
     BEQ     END
     RTS
+LORE:
+    CLR     D1
+    MOVE.B  $4100,D1
+    CMP     #2,D1       IS D1 == 2?
+    BEQ     LORE_2      
+    
+    CMP     #2,D1       IS D1 < 2?
+    BLT     LORE_1
+    
+    CMP     #2,D1       IS D1 > 2?
+    BGT     LORE_3
+LORE_1:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    LEA     LORE1_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     HALT
+    BSR     CONFIRM_STYLE
+    RTS
+
+LORE_2:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    LEA     LORE2_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     HALT
+    BSR     CONFIRM_STYLE
+    RTS
+
+LORE_3:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    LEA     LORE3_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     HALT
+    BSR     CONFIRM_STYLE
+    RTS
+CONFIRM_STYLE:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    LEA     RECONSIDER_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    
+    CMP     #1,D1
+    BEQ     STATS
+    
+    CMP     #0,D1
+    BEQ     INPUT
 *-------------------------------------------------------
 *------------------------REPLAY-------------------------
 *-------------------------------------------------------
 REPLAY:
-    BSR     ENDL
     BSR     CLEAR_SCREEN
+    BSR     ENDL
     LEA     REPLAY_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     
     MOVE.B  #4,D0
     TRAP    #15
@@ -651,6 +745,9 @@ REPLAY:
     
     CMP     #STATISTICS,D1
     BEQ     INITIALS_D
+    
+    CMP     #SHOP,D1
+    BEQ     SHOP_ENTER
     
     CMP     #ATTACK,D1
     BEQ     ATTACK_EMISSION
@@ -673,30 +770,36 @@ ENDL:
 *-------------------------------------------------------
 
 CRLF:           DC.B    $0D,$0A,0
-WELCOME_MSG:    DC.B    '       ************************************************************'
+WELCOME_MSG:    DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
-                DC.B    '                                Wan mission '
                 DC.B    $0D,$0A
-                DC.B    '       ************************************************************'
+                DC.B    ''
+                DC.B    '                                Wan(o) (e)mission '
+                DC.B    $0D,$0A
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '                           PRESS <ENTER> TO START',0
-STARTING_INFO:  DC.B    ''
+STARTING_INFO:  DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
-                DC.B    '     Welcome swordsman-gozaru,'
+                DC.B    '               - Welcome swordsman-gozaru,'
                 DC.B    $0D,$0A
-                DC.B    '                                                   '
+                DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial'
                 DC.B    $0D,$0A
-                DC.B    '                                                   '
+                DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '     beings from space, that are a threat, not even to the Wano kingdom,  '
                 DC.B    $0D,$0A
-                DC.B    '                                                   '
+                DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '     but the world itself!'
-                DC.B    $0D,$0A
-                DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '     Amanto feeds off the oxygen of the earths atmosphere, '
                 DC.B    $0D,$0A
@@ -706,9 +809,11 @@ STARTING_INFO:  DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
+                DC.B    '.------------------------------------------------------------------------------.'
+                DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
-                DC.B    '     Your (E)mission is to fight the Amanto using the swordstyles'
+                DC.B    '               - Your (E)mission is to fight the Amanto using the swordstyles'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
@@ -724,9 +829,11 @@ STARTING_INFO:  DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
+                DC.B    '.-----------------------------------------------------------------------------.'
+                DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     With the combination of combat skills and mythical swords,'
+                DC.B    '               - With the combination of combat skills and mythical swords,'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
@@ -736,20 +843,17 @@ STARTING_INFO:  DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
-                DC.B    '                                                 '
+                DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
-                DC.B    '                                                 '
+                DC.B    '<ENTER> To continue..',0
+STYLE_TITLE:    DC.B    '  ----------           STYLE SELECTION           ----------',0
+STYLE_MSG:      DC.B    '                 SELECT YOUR FIGHTING STYLE: '
                 DC.B    $0D,$0A
-                DC.B    '                                                 '
+                DC.B    '              1: Three swords style(///Santoryu)'
                 DC.B    $0D,$0A
-                DC.B    '*Encountering a dialog, to continue press key <ENTER>',0
-STYLE_MSG:      DC.B    'SELECT YOUR FIGHTING STYLE: '
+                DC.B    '                2: Two swords style(//Nitoryu)'
                 DC.B    $0D,$0A
-                DC.B    '1: Three swords style(///Santoryu)'
-                DC.B    $0D,$0A
-                DC.B    '2: Two swords style(//Nitoryu)'
-                DC.B    $0D,$0A
-                DC.B    '3: One sword style(/Ittoryu)'
+                DC.B    '                 3: One sword style(/Ittoryu)'
                 DC.B    $0D,$0A,0
 LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:
@@ -777,7 +881,7 @@ SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
 THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
 EMISSION:               DC.B    'EMISSION: ',0
 STARTER_MSG:            DC.B    '      INFO: ',0
-ENEMIES_MSG:            DC.B    'ENEMIES ALIVE: ',0
+ENEMIES_MSG:            DC.B    'AMANTO ALIVE: ',0
 STAMINA_MSG:            DC.B    'STAMINA: ',0
 MONEY_MSG:              DC.B    'BALANCE: ',0
 ASK_MSG:                DC.B    '                        Play?'
@@ -808,8 +912,344 @@ EMISSION_SLASHED_TODAY: DC.B    'Carbon Dioxide slashed: ',0
 OUT_STAMINA_MSG         DC.B    '      You are out of stamina, retreat warrior,'
                         DC.B    $0D,$0A
                         DC.B    '         you have done enough, for today..',0
+SHOP_MSG:               DC.B    '  ----------           THE  SHOP          ----------                 '
+                        DC.B    $0D,$0A
+                        DC.B    '                                                 '
+                        DC.B    $0D,$0A
+                        DC.B    '   - Here you can find the goods to ease the battle  '
+                        DC.B    $0D,$0A
+                        DC.B    ' with the Amanto and the Carbon emission in the front.   '
+                        DC.B    $0D,$0A
+                        DC.B    '     - Take your time and spend your gold coins  '
+                        DC.B    $0D,$0A
+                        DC.B    '                       wisely..                             '
+                        DC.B    $0D,$0A
+                        DC.B    '                                                 '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           ',0
+LORE1_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '                   -------I--  Three swords style  --I-------'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '                                      -T-'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '       - Legendary swordsman style, required immense strength and skill'
+                        DC.B    $0D,$0A
+                        DC.B    '              to utilize three swords at once - two in the palms,'
+                        DC.B    $0D,$0A
+                        DC.B    '          one in between theeth, clenched for grip and utilization of '
+                        DC.B    $0D,$0A
+                        DC.B    '              immense jaw strength, following thoroughly trained'
+                        DC.B    $0D,$0A
+                        DC.B    '                  neck muscles to move the sword as pleased.'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '<ENTER> To continue..        ',0
+LORE2_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '                    -------I--  Two swords style  --I-------                    '
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           - Not so widely utilized swordsman style, also as recalled '
+                        DC.B    $0D,$0A
+                        DC.B    '                 as dual wielding, use of two unsheathed swords'
+                        DC.B    $0D,$0A
+                        DC.B    '           at the same time to balance out offensive along the defensive. '
+                        DC.B    $0D,$0A
+                        DC.B    '                 Perfect combination to battle shielded opponents'
+                        DC.B    $0D,$0A
+                        DC.B    '           to place them out of balance by a strike and finish them off'
+                        DC.B    $0D,$0A
+                        DC.B    '                             with the second slash.'
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '   '
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '<ENTER> To continue..        ',0
+                        
+LORE3_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '                                One sword style'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |                      '
+                        DC.B    $0D,$0A
+                        DC.B    '                                      -T-  '
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '                                       |'
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '       - Legendary swordsman style, required immense strength and skill        '
+                        DC.B    $0D,$0A
+                        DC.B    '              to utilize three swords at once - two in the palms,'
+                        DC.B    $0D,$0A
+                        DC.B    '          one in between theeth, clenched for grip and utilization of '
+                        DC.B    $0D,$0A
+                        DC.B    '              immense jaw strength, following thoroughly trained'
+                        DC.B    $0D,$0A
+                        DC.B    '                  neck muscles to move the sword as pleased.'
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '           '
+                        DC.B    $0D,$0A
+                        DC.B    '   '
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    '<ENTER> To continue..        ',0
+RECONSIDER_MSG:         DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ' --------------------- Do you wish to lock in this style? ---------------------'
+                        DC.B    $0D,$0A
+                        DC.B    ' ------------ Input: 1 to confirm ----------- Input: 0 to cancel -------------'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------',0                 
+PAGE_SIZE:              DC.B    '---------------------------------------.----------------------------------------'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '-                                     mid                                      -'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------',0
 
 
+                       
     END START
 
 
