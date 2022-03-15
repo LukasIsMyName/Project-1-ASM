@@ -22,14 +22,16 @@ WIN_POINT         EQU 5      POINTS ACCUMILATED ON WIN
 LOSE_STAMINA      EQU 5      POINTS DEDUCTED ON A LOSS
 DAMAGE_EMISSION   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION
 EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
-
+ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
+MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
 
 
 *START OF GAME
 START:
-    MOVE.B  #100,$4000 PUT SCORE/HEALTH IN MEMORY LOCATION $4000
-    LEA     $4000,A3   ASSIGN ADDRESS A3 TO THAT MEMORY LOCATION
-
+    MOVE.W  #EMISSION_COUNT,$6000 EMISSION COUNT PLACED IN MEMORY 6000
+    MOVE.W  #ENEMY_COUNT,$5000    ENEMIES COUNT PLACED IN MEMORY 5000
+    LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
+    LEA     $5000,A3
 
     BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
     BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
@@ -77,7 +79,6 @@ WELCOME:
 *---------GAMEPLAY INPUT VALUES SUBROUTINE--------------
 *-------------------------------------------------------    
 INPUT:
-    BSR     POTIONS         BRANCH TO POTION INPUT SUBROUTINE
     BSR     WEAPONS         BRANCH TO WEAPONSS INPUT SUBROUTINE
     RTS
 
@@ -103,24 +104,71 @@ GAMELOOP:
 STATS:
     BSR     ENDL
     BSR     DECORATE
+    LEA     STARTER_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     DECORATE
     LEA     FIGHTING_STYLE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
-    MOVE.B  $4100,D1
-    CMP     #1,D1
-    BSR     ENDL
-    LEA     POTIONS_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
+                         *** DISPLAY THE INITIAL FIGTHING STYLE             
     CLR     D1
-    MOVE.B  (A3),D7     RETRIEVE THE VALUE A3 POINT TO AND MOVE TO D1
-    MOVE.B  D7,D1
-    MOVE.B  #3,D0       MOVE LITERAL 3 TO D0
-    TRAP    #15         INTREPRET VALUE IN D0, WHICH 3 WHICH DISPLAYS D1
+    MOVE.B  $4100,D1
+    CMP     #2,D1       IS D1 == 2?
+    BEQ     PICK_2      
+    
+    CMP     #2,D1       IS D1 < 2?
+    BLT     PICK_1
+    
+    CMP     #2,D1       IS D1 > 2?
+    BGT     PICK_3
+    
+    BSR     DECORATE
+    BSR     ENDL
     MOVE.B  #4,D0
     TRAP    #15 
     BSR     DECORATE
+                         *** DISPLAY THE INITIAL EMISSION 
+    CLR     D1
+    BSR     ENDL
+    MOVE.W  (A4),D6
+    MOVE.W  D6,D1
+    LEA     EMISSION,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #3,D0
+    TRAP    #15
+                         *** DISPLAY THE INITIAL ENEMY COUNT 
+    CLR     D1
+    BSR     ENDL
+    MOVE.W  (A3),D5
+    MOVE.W  D5,D1
+    LEA     ENEMIES_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #3,D0
+    TRAP    #15
     RTS
+    
+PICK_1:
+    LEA     FIRST_PICK,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    RTS
+PICK_2:
+    LEA     SECOND_PICK,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    RTS
+PICK_3:
+    LEA     THIRD_PICK,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    RTS
+ 
 *-------------------------------------------------------
 *----------------UPDATE QUEST PROGRESS------------------
 *  COMPLETE QUEST
@@ -138,24 +186,6 @@ UPDATE:
 DRAW:
     BSR     ENDL
     BSR     DECORATE
-    BSR     DECORATE
-    RTS
-
-*-------------------------------------------------------
-*--------------------POTIONS INVENTORY---------------------
-* NUMBER OF POTIONS TO BE USED IN A QUEST 
-*------------------------------------------------------- 
-POTIONS:
-    BSR     ENDL
-    BSR     DECORATE
-    MOVE.B  #14,D0
-    TRAP    #15
-    LEA     POTION_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
-    MOVE.B  #4,D0
-    TRAP    #15
-    MOVE.B  D1,$4000
     BSR     DECORATE
     RTS
 
@@ -270,47 +300,63 @@ STARTING_INFO:  DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial beings from space,'
+                DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial'
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     that are a threat, not even to the Wano kingdom, but the world itself!'
+                DC.B    '     beings from space, that are a threat, not even to the Wano kingdom,  '
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     Amanto feeds off the oxygen in the earth leaving the air with pure Carbon Dioxide.'
+                DC.B    '     but the world itself!'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '     Amanto feeds off the oxygen of the earths atmosphere, '
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
+                DC.B    '     leaving the air with pure Carbon Dioxide.  '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
+                DC.B    $0D,$0A
+                DC.B    '                                                 '
+                DC.B    $0D,$0A
+                DC.B    '     Your (E)mission is to fight the Amanto using the swordstyles'
+                DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     Your (E)mission is to fight the Amanto using the swordstyles you have honed throughout the years,'
+                DC.B    '     you have honed throughout the years,      '
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
-                DC.B    '     by using the mythical swords made out of Di-shards, the mixture of Amanto brought metal and ancient shards'
+                DC.B    '     by using the mythical swords made out of Di-shards,'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '     the mixture of Amanto brought metal and ancient shards.        '
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '     With the combination of combat skills and mythical swords,'
+                DC.B    $0D,$0A
+                DC.B    '                                                   '
+                DC.B    $0D,$0A
+                DC.B    '     you have a chance to bring the tidings, all rests on your shoulders-gozaru.   '
                 DC.B    $0D,$0A
                 DC.B    '                                                   '
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
-                DC.B    '     With the combination of combat skills and mythical swords in your palms, you have a chance to bring the '
-                DC.B    $0D,$0A
-                DC.B    '                                                   '
-                DC.B    $0D,$0A
-                DC.B    '     invaders and the Carbon emission down, all rests on your shoulders-gozaru.                                            '
-                DC.B    $0D,$0A
-                DC.B    '                                                   '
+                DC.B    '                                                 '
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
                 DC.B    '*Encountering a dialog, to continue press key <ENTER>',0
-POTION_MSG:     DC.B    '                       HEALTH POTIONS'
-                DC.B    $0D,$0A
-                DC.B    '*ENTER STARTING POTION NUMBER : ',0
-POTIONS_MSG:    DC.B    'NUMBER OF POTIONS : ',0
 STYLE_MSG:      DC.B    'SELECT YOUR FIGHTING STYLE: '
                 DC.B    $0D,$0A
                 DC.B    '1: Three swords style(///Santoryu)'
@@ -323,12 +369,15 @@ LOOP_MSG:       DC.B    '.',0
 REPLAY_MSG:     DC.B    'ENTER 0 TO QUIT ANY OTHER NUMBER TO REPLAY : ',0
 HUD_MSG:        DC.B    'SCORE : ',0
 FIGHTING_STYLE_MSG:     DC.B    'Your fighting style is : ',0
-                        
-HEALTH:     DS.W    1   PLAYERS HEALTH
-SCORE:      DS.W    1   RESERVE SPACE FOR SCORE
-
-
+FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
+SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
+THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
+EMISSION:               DC.B    'EMISSION: ',0
+STARTER_MSG:            DC.B    '      Your starter: ',0
+ENEMIES_MSG:            DC.B    'ENEMIES ALIVE: ',0
     END START
+
+
 
 
 

@@ -1,7 +1,7 @@
                					"Wano 'mission"
 
 1. Leave swordsmans part to fight carbon emission
-	- Pick sword style
++	- Pick sword style
 	- Each sword style has different damage to the emission resulting in greater use of stamina
 	- Buy new swords for more damage towards emission
 
