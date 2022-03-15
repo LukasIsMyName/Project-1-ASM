@@ -27,9 +27,13 @@ ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
 MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
 STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
 DAYS_COUNT        EQU 0      INITIAL DAYS PASSED COUNT
+ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
+EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
 
 *--------------------------INCREMENTS----------------------------------*
-DAMAGE_EMISSION   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION
+DAMAGE_EMISSION_ONE   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
+DAMAGE_EMISSION_TWO   EQU 150    BASE DAMAGE MULTIPLIER FOR EMISSION TWO SWORDS
+DAMAGE_EMISSION_THREE   EQU 250  BASE DAMAGE MULTIPLIER FOR EMISSION THREE SWORDS
 EMISSION_INC      EQU 40     EMISSION INCREMENT FOR EACH ENEMY
 MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
 STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
@@ -37,11 +41,13 @@ STAMINA_DEC       EQU 5      STAMINA DEDUCTED ON A KILL
 
 *START OF GAME
 START:
-    MOVE.W  #EMISSION_COUNT,$6000 EMISSION COUNT PLACED IN MEMORY 6000
-    MOVE.W  #ENEMY_COUNT,$5000    ENEMIES COUNT PLACED IN MEMORY 5000
-    MOVE.B  #STAMINA_COUNT,$7000  STAMINA COUNT PLACED IN 7000
-    MOVE.W  #MONEY_COUNT,$8000    MONEY COUNT PLACED IN 8000
-    MOVE.W  #DAYS_COUNT,$9000     DAYS COUNT PLACED IN MEMORY 9000
+    MOVE.W  #EMISSION_COUNT,$6000      EMISSION COUNT PLACED IN MEMORY 6000
+    MOVE.W  #ENEMY_COUNT,$5000         ENEMIES COUNT PLACED IN MEMORY 5000
+    MOVE.B  #STAMINA_COUNT,$7000       STAMINA COUNT PLACED IN 7000
+    MOVE.W  #MONEY_COUNT,$8000         MONEY COUNT PLACED IN 8000
+    MOVE.W  #DAYS_COUNT,$9000          DAYS COUNT PLACED IN MEMORY 9000
+    MOVE.W  #ENEMIES_DEFEATED,$10000   ENEMIES DEFEATED COUNT PLACED IN MEMORY 10000
+    MOVE.W  #EMISSION_SLASHED,$11000   EMISSION SLASHED COUNT PLACED IN MEMORY 11000
     LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
     LEA     $7000,A2
@@ -244,18 +250,302 @@ UPDATE:
     ADD.W   #1,D1
     MOVE.W  D1,$5000
     LEA     $5000,A3
+                             *RESETS THE STAMINA
+    CLR     D1
+    MOVE.B  $7000,D1
+    MOVE.B  #100,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
     RTS
 *-------------------------------------------------------
 *-----------------DRAW QUEST UPDATES--------------------
 * DRAW THE GAME PROGRESS INFORMATION, STATUS REGARDING
 * QUEST
 *------------------------------------------------------- 
-DRAW:
+ATTACK_EMISSION:
     BSR     ENDL
+    BSR     CLEAR_SCREEN
     BSR     DECORATE
-    BSR     DECORATE
+    LEA     BATTLEFIELD_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    
+    LEA     ENEMIES_KILLED_TODAY,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    LEA     $10000,A1
+    MOVE.W  (A1),D1
+    MOVE.B  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    
+    LEA     EMISSION_SLASHED_TODAY,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    LEA     $11000,A1
+    MOVE.W  (A1),D1
+    MOVE.B  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     STAMINA_DISPLAY
+    BSR     ENDL
+    
+    CLR     D1
+    MOVE.B  #4,D0
+    TRAP    #15
+    MOVE.B  #3,D0
+    
+    CMP     #0,D1
+    BEQ     REPLAY
+    
+    CMP     #1,D1
+    BEQ     ATTACK_ENEMY
+    
+    CMP     #2,D1
+    BEQ     ATTACK_DIRECTLY
+    
+    BSR     HALT    
+    JMP     ATTACK_EMISSION
+    
+ATTACK_ENEMY:
+*---------------------------------------------------ATTACK ENEMY----------------------------------* 
+    CLR     D1
+    MOVE.B  $7000,D1
+    CMP     #0,D1
+    BEQ     NO_STAMINA
+                            *IF OUT OF STAMINA, DISPLAY
+                            *IF NOT, CONTINUE
+                            
+                            *DECREMENTS THE ENEMIES COUNT
+    CLR     D1
+    MOVE.W  (A3),D1
+    SUB.W   #1,D1
+    MOVE.W  D1,$5000
+    LEA     $5000,A3
+                            *INCREMENTS DEFEATED ENEMIES COUNT
+    CLR     D1
+    LEA     $10000,A1
+    MOVE.W  (A1),D1
+    ADD.W   #1,D1
+    MOVE.W  D1,$10000
+    LEA     $10000,A1
+                            *INCREMENT THE MONEY COUNT FOR EACH KILL
+    CLR     D1
+    LEA     $8000,A1
+    MOVE.W  (A1),D1
+    ADD.W   #MONEY_INC,D1
+    MOVE.W  D1,$8000
+    LEA     $8000,A1
+    
+                            *DECREMENTS THE EMISSION COUNT
+    CLR     D1
+    LEA     $4100,A1
+    MOVE.B  (A1),D1
+    
+    CMP     #1,D1
+    BEQ     SUB_THREE_SWORDS
+    
+    CMP     #2,D1
+    BEQ     SUB_TWO_SWORDS
+    
+    CMP     #3,D1
+    BEQ     SUB_ONE_SWORD
     RTS
+SUB_THREE_SWORDS:
+                                *DECREMENTS EMISSION TOTAL    
+    MOVE.W  (A4),D1
+    SUB.W   #DAMAGE_EMISSION_THREE,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                                *INCREMENTS EMISSION SLASHED COUNT    
+    MOVE.W  $11000,D1
+    ADD.W   #DAMAGE_EMISSION_THREE,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+    
+                                 *DECREMENTS STAMINA
+    MOVE.B  $7000,D1
+    SUB.B   #STAMINA_DEC,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
 
+    
+    JMP     ATTACK_EMISSION
+SUB_TWO_SWORDS:     
+    MOVE.W  (A4),D1
+    SUB.W   #DAMAGE_EMISSION_TWO,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+    
+    MOVE.W  $11000,D1
+    ADD.W   #DAMAGE_EMISSION_TWO,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+    
+                                    *DECREMENTS STAMINA
+    MOVE.B  $7000,D1
+    SUB.B   #STAMINA_DEC,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
+    
+    JMP     ATTACK_EMISSION
+SUB_ONE_SWORD:     
+    MOVE.W  (A4),D1
+    SUB.W   #DAMAGE_EMISSION_ONE,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+    
+    MOVE.W  $11000,D1
+    ADD.W   #DAMAGE_EMISSION_ONE,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+                                    *DECREMENTS STAMINA
+    MOVE.B  $7000,D1
+    SUB.B   #STAMINA_DEC,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
+    
+    JMP     ATTACK_EMISSION
+NO_STAMINA:
+    BSR     ENDL
+    LEA     OUT_STAMINA_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     HALT
+    JMP     ATTACK_EMISSION
+    
+*---------------------------------------------------ATTACK DIRECTLY----------------------------------*    
+ATTACK_DIRECTLY:
+    CLR     D1
+    MOVE.B  $7000,D1
+    CMP     #0,D1
+    BEQ     NO_STAMINA
+                            *IF OUT OF STAMINA, DISPLAY
+                            *IF NOT, CONTINUE
+
+    CLR     D1
+    LEA     $4100,A1
+    MOVE.B  (A1),D1
+    
+    CMP     #1,D1
+    BEQ     SUB_THREE_SWORDS_DI
+    
+    CMP     #2,D1
+    BEQ     SUB_TWO_SWORDS_DI
+    
+    CMP     #3,D1
+    BEQ     SUB_ONE_SWORD_DI
+    
+    BSR     ATTACK_EMISSION
+SUB_THREE_SWORDS_DI:
+                                 *DECREMENTS STAMINA
+    CLR     D2
+    CLR     D3
+    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #4,D3
+    MULU    D2,D3
+    MOVE.B  $7000,D1
+    CMP     D1,D3
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+    SUB.B   D3,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
+                                *DECREMENTS EMISSION TOTAL
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_THREE,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  (A4),D1
+    SUB.W   D3,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                                *INCREMENTS EMISSION SLASHED COUNT
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_THREE,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  $11000,D1
+    ADD.W   D3,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+    JMP     ATTACK_EMISSION
+    
+SUB_TWO_SWORDS_DI:     
+                                   *DECREMENTS STAMINA
+    CLR     D2
+    CLR     D3
+    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #3,D3
+    MULU    D2,D3
+    MOVE.B  $7000,D1
+    CMP     D1,D3
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+    SUB.B   D3,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
+                                *DECREMENTS EMISSION TOTAL
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_TWO,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  (A4),D1
+    SUB.W   D3,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                                *INCREMENTS EMISSION SLASHED COUNT
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_TWO,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  $11000,D1
+    ADD.W   D3,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+    
+    JMP     ATTACK_EMISSION
+    
+SUB_ONE_SWORD_DI:     
+                                       *DECREMENTS STAMINA
+    CLR     D2
+    CLR     D3
+    MOVE.B  #STAMINA_DEC,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3
+    MOVE.B  $7000,D1
+    CMP     D1,D3
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+    SUB.B   D3,D1
+    MOVE.B  D1,$7000
+    LEA     $7000,A1
+                                *DECREMENTS EMISSION TOTAL
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_ONE,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  (A4),D1
+    SUB.W   D3,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                                *INCREMENTS EMISSION SLASHED COUNT
+    CLR     D2
+    CLR     D3
+    MOVE.B  #DAMAGE_EMISSION_ONE,D2
+    MOVE.B  #2,D3
+    MULU    D2,D3    
+    MOVE.W  $11000,D1
+    ADD.W   D3,D1
+    MOVE.W  D1,$11000
+    LEA     $11000,A1
+    JMP     ATTACK_EMISSION
+    
+
+           
 *-------------------------------------------------------
 *-------------------------WEAPONS-----------------------
 * NUMBER OF WEAPONS
@@ -309,6 +599,7 @@ NEXT:
 *------------------SCREEN DECORATION--------------------
 *-------------------------------------------------------
 DECORATE:
+    CLR     D3
     MOVE.B  #60, D3
     BSR     ENDL
 OUT:
@@ -360,6 +651,9 @@ REPLAY:
     
     CMP     #STATISTICS,D1
     BEQ     INITIALS_D
+    
+    CMP     #ATTACK,D1
+    BEQ     ATTACK_EMISSION
     
     CMP     #NEXT_DAY,D1
     BEQ     GAMELOOP
@@ -492,9 +786,32 @@ ASK_MSG:                DC.B    '                        Play?'
                         DC.B    $0D,$0A
                         DC.B    '                    To EXIT enter 0           ',0
 DAYS_MSG:               DC.B    'Day: ',0
+BATTLEFIELD_MSG:        DC.B    '   ----------       THE BATTLEFIELD       ----------                 '
+                        DC.B    $0D,$0A
+                        DC.B    '                                                 '
+                        DC.B    $0D,$0A
+                        DC.B    '      - You have entered the battlefield, prepare to battle  '
+                        DC.B    $0D,$0A
+                        DC.B    '      the Amanto and slash through the Carbon Dioxide with   '
+                        DC.B    $0D,$0A
+                        DC.B    '           your mighty swords to save the earth  '
+                        DC.B    $0D,$0A
+                        DC.B    '                                                 '
+                        DC.B    $0D,$0A
+                        DC.B    '           *To attack Amanto:             input 1'
+                        DC.B    $0D,$0A
+                        DC.B    '           *To attack Emission directly:  input 2'
+                        DC.B    $0D,$0A
+                        DC.B    '           *To return to the menu:        input 0',0
+ENEMIES_KILLED_TODAY:   DC.B    'Enemies defeated: ',0
+EMISSION_SLASHED_TODAY: DC.B    'Carbon Dioxide slashed: ',0
+OUT_STAMINA_MSG         DC.B    '      You are out of stamina, retreat warrior,'
+                        DC.B    $0D,$0A
+                        DC.B    '         you have done enough, for today..',0
 
 
     END START
+
 
 
 
