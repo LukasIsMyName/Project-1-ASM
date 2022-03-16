@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 15/03/2022 18:58:21
+Created On: 15/03/2022 19:05:50
 
 00000000                             1  
 00000000                             2  * NAME: LUKAS SUMKAUSKAS
@@ -28,7 +28,7 @@ Created On: 15/03/2022 18:58:21
 00001000                            24  
 00001000  =00007530                 25  EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
 00001000  =000000C8                 26  ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
-00001000  =000005DC                 27  MONEY_COUNT       EQU 1500    INITIAL MONEY COUNT
+00001000  =00000096                 27  MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
 00001000  =00000064                 28  STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
 00001000  =00000001                 29  DAYS_COUNT        EQU 1      INITIAL DAYS PASSED COUNT
 00001000  =00000000                 30  ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
@@ -54,7 +54,7 @@ Created On: 15/03/2022 18:58:21
 00001000  31FC 7530 6000            50      MOVE.W  #EMISSION_COUNT,$6000      EMISSION COUNT PLACED IN MEMORY 6000
 00001006  31FC 00C8 5000            51      MOVE.W  #ENEMY_COUNT,$5000         ENEMIES COUNT PLACED IN MEMORY 5000
 0000100C  11FC 0064 7000            52      MOVE.B  #STAMINA_COUNT,$7000       STAMINA COUNT PLACED IN 7000
-00001012  33FC 05DC 00008000        53      MOVE.W  #MONEY_COUNT,$8000         MONEY COUNT PLACED IN 8000
+00001012  33FC 0096 00008000        53      MOVE.W  #MONEY_COUNT,$8000         MONEY COUNT PLACED IN 8000
 0000101A  33FC 0001 00009000        54      MOVE.W  #DAYS_COUNT,$9000          DAYS COUNT PLACED IN MEMORY 9000
 00001022  33FC 0000 00010000        55      MOVE.W  #ENEMIES_DEFEATED,$10000   ENEMIES DEFEATED COUNT PLACED IN MEMORY 10000
 0000102A  33FC 0000 00011000        56      MOVE.W  #EMISSION_SLASHED,$11000   EMISSION SLASHED COUNT PLACED IN MEMORY 11000
@@ -68,9 +68,9 @@ Created On: 15/03/2022 18:58:21
 00001056  4DF9 00009000             64      LEA     $9000,A6
 0000105C                            65  
 0000105C  6100 0FAC                 66      BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
-00001060  6100 1846                 67      BSR     DECORATE
+00001060  6100 1860                 67      BSR     DECORATE
 00001064  6100 0FEE                 68      BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
-00001068  6100 189A                 69      BSR     LORE
+00001068  6100 18B4                 69      BSR     LORE
 0000106C  6100 1002                 70      BSR     STATS
 00001070  6100 0F8E                 71      BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 00001074                            72  *GAME LOOP
@@ -90,25 +90,25 @@ Created On: 15/03/2022 18:58:21
 0000200A                            86  *-------------------WELCOME SUBROUTINE------------------
 0000200A                            87  *-------------------------------------------------------
 0000200A                            88  WELCOME:
-0000200A  43F9 00002A39             89      LEA     WELCOME_MSG,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
+0000200A  43F9 00002A53             89      LEA     WELCOME_MSG,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
 00002010  103C 000E                 90      MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
 00002014  4E4F                      91      TRAP    #15             TRAP AND INTERPRET VALUE IN D0
 00002016  103C 0004                 92      MOVE.B  #4,D0
 0000201A  4E4F                      93      TRAP    #15
-0000201C  6100 08AA                 94      BSR     CLEAR_SCREEN
-00002020  6100 0886                 95      BSR     DECORATE
-00002024  6100 08A2                 96      BSR     CLEAR_SCREEN
-00002028  6100 087E                 97      BSR     DECORATE
-0000202C  6100 089A                 98      BSR     CLEAR_SCREEN
-00002030  43F9 00002B4B             99      LEA     STARTING_INFO,A1
+0000201C  6100 08C4                 94      BSR     CLEAR_SCREEN
+00002020  6100 08A0                 95      BSR     DECORATE
+00002024  6100 08BC                 96      BSR     CLEAR_SCREEN
+00002028  6100 0898                 97      BSR     DECORATE
+0000202C  6100 08B4                 98      BSR     CLEAR_SCREEN
+00002030  43F9 00002B65             99      LEA     STARTING_INFO,A1
 00002036  103C 000E                100      MOVE.B  #14,D0
 0000203A  4E4F                     101      TRAP    #15
 0000203C  103C 0004                102      MOVE.B  #4,D0
 00002040  4E4F                     103      TRAP    #15
-00002042  6100 0864                104      BSR     DECORATE
-00002046  6100 0880                105      BSR     CLEAR_SCREEN
-0000204A  6100 085C                106      BSR     DECORATE
-0000204E  6100 0878                107      BSR     CLEAR_SCREEN
+00002042  6100 087E                104      BSR     DECORATE
+00002046  6100 089A                105      BSR     CLEAR_SCREEN
+0000204A  6100 0876                106      BSR     DECORATE
+0000204E  6100 0892                107      BSR     CLEAR_SCREEN
 00002052  4E75                     108      RTS                     RETURN FROM WELCOME: SUBROUTINE
 00002054                           109  
 00002054                           110  *-------------------------------------------------------
@@ -122,28 +122,28 @@ Created On: 15/03/2022 18:58:21
 0000205A                           118  *----------------GAMELOOP (MAIN LOOP)-------------------
 0000205A                           119  *------------------------------------------------------- 
 0000205A                           120  GAMELOOP:
-0000205A  6100 086C                121      BSR     CLEAR_SCREEN
+0000205A  6100 0886                121      BSR     CLEAR_SCREEN
 0000205E  6100 0370                122      BSR     UPDATE
-00002062  6100 0864                123      BSR     CLEAR_SCREEN
-00002066  6100 096E                124      BSR     REPLAY          BRANCH TO REPLAY GAME SUBROUTINE
-0000206A  6100 085C                125      BSR     CLEAR_SCREEN    CLEARS THE SCREEN
+00002062  6100 087E                123      BSR     CLEAR_SCREEN
+00002066  6100 0988                124      BSR     REPLAY          BRANCH TO REPLAY GAME SUBROUTINE
+0000206A  6100 0876                125      BSR     CLEAR_SCREEN    CLEARS THE SCREEN
 0000206E  4E75                     126      RTS                     RETURN FROM GAMELOOP: SUBROUTINE
 00002070                           127  
 00002070                           128  *-------------------------------------------------------
 00002070                           129  *----------------STATS (DISPLAYS STATS)-------------------
 00002070                           130  *------------------------------------------------------- 
 00002070                           131  STATS:
-00002070  6100 0856                132      BSR     CLEAR_SCREEN
-00002074  6100 0832                133      BSR     DECORATE
-00002078  6100 084E                134      BSR     CLEAR_SCREEN
-0000207C  6100 082A                135      BSR     DECORATE
-00002080  6100 0846                136      BSR     CLEAR_SCREEN
-00002084  6100 099A                137      BSR     ENDL
-00002088  43F9 000037B5            138      LEA     STARTER_MSG,A1
+00002070  6100 0870                132      BSR     CLEAR_SCREEN
+00002074  6100 084C                133      BSR     DECORATE
+00002078  6100 0868                134      BSR     CLEAR_SCREEN
+0000207C  6100 0844                135      BSR     DECORATE
+00002080  6100 0860                136      BSR     CLEAR_SCREEN
+00002084  6100 09B4                137      BSR     ENDL
+00002088  43F9 000037CF            138      LEA     STARTER_MSG,A1
 0000208E  103C 000E                139      MOVE.B  #14,D0
 00002092  4E4F                     140      TRAP    #15
-00002094  6100 098A                141      BSR     ENDL
-00002098  43F9 0000360A            142      LEA     FIGHTING_STYLE_MSG,A1
+00002094  6100 09A4                141      BSR     ENDL
+00002098  43F9 00003624            142      LEA     FIGHTING_STYLE_MSG,A1
 0000209E  103C 000E                143      MOVE.B  #14,D0
 000020A2  4E4F                     144      TRAP    #15
 000020A4                           145                           *** DISPLAY THE INITIAL FIGTHING STYLE             
@@ -160,23 +160,23 @@ Created On: 15/03/2022 18:58:21
 000020C2                           156      
 000020C2                           157  INITIALS_D:
 000020C2  6100 002C                158      BSR     EMISSION_DISPLAY
-000020C6  6100 0958                159      BSR     ENDL
+000020C6  6100 0972                159      BSR     ENDL
 000020CA  6100 0042                160      BSR     ENEMY_DISPLAY
-000020CE  6100 0950                161      BSR     ENDL
+000020CE  6100 096A                161      BSR     ENDL
 000020D2  6100 0058                162      BSR     STAMINA_DISPLAY
-000020D6  6100 0948                163      BSR     ENDL
+000020D6  6100 0962                163      BSR     ENDL
 000020DA  6100 006E                164      BSR     MONEY_DISPLAY
-000020DE  6100 0940                165      BSR     ENDL
+000020DE  6100 095A                165      BSR     ENDL
 000020E2  6100 0084                166      BSR     DAYS_DISPLAY
-000020E6  6100 07EC                167      BSR     HALT
-000020EA  4EF9 000029D6            168      JMP     REPLAY
+000020E6  6100 0806                167      BSR     HALT
+000020EA  4EF9 000029F0            168      JMP     REPLAY
 000020F0                           169     
 000020F0                           170  EMISSION_DISPLAY:                         *** DISPLAY THE INITIAL EMISSION 
 000020F0  4241                     171      CLR     D1
-000020F2  6100 092C                172      BSR     ENDL
+000020F2  6100 0946                172      BSR     ENDL
 000020F6  3C14                     173      MOVE.W  (A4),D6
 000020F8  3206                     174      MOVE.W  D6,D1
-000020FA  43F9 00003786            175      LEA     EMISSION,A1
+000020FA  43F9 000037A0            175      LEA     EMISSION,A1
 00002100  103C 000E                176      MOVE.B  #14,D0
 00002104  4E4F                     177      TRAP    #15
 00002106  303C 0003                178      MOVE.W  #3,D0
@@ -185,10 +185,10 @@ Created On: 15/03/2022 18:58:21
 0000210E                           181      
 0000210E                           182  ENEMY_DISPLAY:                         *** DISPLAY THE INITIAL ENEMY COUNT 
 0000210E  4241                     183      CLR     D1
-00002110  6100 090E                184      BSR     ENDL
+00002110  6100 0928                184      BSR     ENDL
 00002114  3A13                     185      MOVE.W  (A3),D5
 00002116  3205                     186      MOVE.W  D5,D1
-00002118  43F9 00003808            187      LEA     ENEMIES_MSG,A1
+00002118  43F9 00003822            187      LEA     ENEMIES_MSG,A1
 0000211E  103C 000E                188      MOVE.B  #14,D0
 00002122  4E4F                     189      TRAP    #15
 00002124  303C 0003                190      MOVE.W  #3,D0
@@ -197,10 +197,10 @@ Created On: 15/03/2022 18:58:21
 0000212C                           193      
 0000212C                           194  STAMINA_DISPLAY:
 0000212C  4241                     195      CLR     D1
-0000212E  6100 08F0                196      BSR     ENDL
+0000212E  6100 090A                196      BSR     ENDL
 00002132  1812                     197      MOVE.B  (A2),D4
 00002134  1204                     198      MOVE.B  D4,D1
-00002136  43F9 00003839            199      LEA     STAMINA_MSG,A1
+00002136  43F9 00003853            199      LEA     STAMINA_MSG,A1
 0000213C  103C 000E                200      MOVE.B  #14,D0
 00002140  4E4F                     201      TRAP    #15
 00002142  103C 0003                202      MOVE.B  #3,D0
@@ -208,10 +208,10 @@ Created On: 15/03/2022 18:58:21
 00002148  4E75                     204      RTS
 0000214A                           205  MONEY_DISPLAY:
 0000214A  4241                     206      CLR     D1
-0000214C  6100 08D2                207      BSR     ENDL
+0000214C  6100 08EC                207      BSR     ENDL
 00002150  3615                     208      MOVE.W  (A5),D3
 00002152  3203                     209      MOVE.W  D3,D1
-00002154  43F9 00003867            210      LEA     MONEY_MSG,A1
+00002154  43F9 00003881            210      LEA     MONEY_MSG,A1
 0000215A  103C 000E                211      MOVE.B  #14,D0
 0000215E  4E4F                     212      TRAP    #15
 00002160  303C 0003                213      MOVE.W  #3,D0
@@ -219,9 +219,9 @@ Created On: 15/03/2022 18:58:21
 00002166  4E75                     215      RTS
 00002168                           216  DAYS_DISPLAY:
 00002168  4241                     217      CLR     D1
-0000216A  6100 08B4                218      BSR     ENDL
+0000216A  6100 08CE                218      BSR     ENDL
 0000216E  3216                     219      MOVE.W  (A6),D1
-00002170  43F9 00003989            220      LEA     DAYS_MSG,A1
+00002170  43F9 000039A3            220      LEA     DAYS_MSG,A1
 00002176  103C 000E                221      MOVE.B  #14,D0
 0000217A  4E4F                     222      TRAP    #15
 0000217C  303C 0003                223      MOVE.W  #3,D0
@@ -229,192 +229,192 @@ Created On: 15/03/2022 18:58:21
 00002182  4E75                     225      RTS
 00002184                           226      
 00002184                           227  PICK_1:
-00002184  43F9 00003730            228      LEA     FIRST_PICK,A1
+00002184  43F9 0000374A            228      LEA     FIRST_PICK,A1
 0000218A  103C 000E                229      MOVE.B  #14,D0
 0000218E  4E4F                     230      TRAP    #15
-00002190  6100 088E                231      BSR     ENDL
-00002194  6100 088A                232      BSR     ENDL
+00002190  6100 08A8                231      BSR     ENDL
+00002194  6100 08A4                232      BSR     ENDL
 00002198                           233      
-00002198  43F9 00003635            234      LEA     STYLE_DAMAGE_MSG,A1
+00002198  43F9 0000364F            234      LEA     STYLE_DAMAGE_MSG,A1
 0000219E  103C 000E                235      MOVE.B  #14,D0
 000021A2  4E4F                     236      TRAP    #15
 000021A4                           237      
 000021A4  323C 00FA                238      MOVE.W  #DAMAGE_EMISSION_THREE,D1
 000021A8  303C 0003                239      MOVE.W  #3,D0
 000021AC  4E4F                     240      TRAP    #15
-000021AE  6100 0870                241      BSR     ENDL
-000021B2  6100 086C                242      BSR     ENDL
+000021AE  6100 088A                241      BSR     ENDL
+000021B2  6100 0886                242      BSR     ENDL
 000021B6                           243      
-000021B6  43F9 00003668            244      LEA     STAMINA_NORMAL_MSG,A1
+000021B6  43F9 00003682            244      LEA     STAMINA_NORMAL_MSG,A1
 000021BC  103C 000E                245      MOVE.B  #14,D0
 000021C0  4E4F                     246      TRAP    #15
 000021C2  323C 0005                247      MOVE.W  #STAMINA_DEC_3,D1
 000021C6  303C 0003                248      MOVE.W  #3,D0
 000021CA  4E4F                     249      TRAP    #15
-000021CC  6100 0852                250      BSR     ENDL
-000021D0  6100 084E                251      BSR     ENDL 
+000021CC  6100 086C                250      BSR     ENDL
+000021D0  6100 0868                251      BSR     ENDL 
 000021D4                           252      
-000021D4  43F9 0000369C            253      LEA     STAMINA_USE_MSG,A1
+000021D4  43F9 000036B6            253      LEA     STAMINA_USE_MSG,A1
 000021DA  103C 000E                254      MOVE.B  #14,D0
 000021DE  4E4F                     255      TRAP    #15
 000021E0  323C 0014                256      MOVE.W  #5*4,D1
 000021E4  303C 0003                257      MOVE.W  #3,D0
 000021E8  4E4F                     258      TRAP    #15
-000021EA  6100 0834                259      BSR     ENDL
-000021EE  6100 0830                260      BSR     ENDL
+000021EA  6100 084E                259      BSR     ENDL
+000021EE  6100 084A                260      BSR     ENDL
 000021F2                           261  
 000021F2  4242                     262      CLR     D2
 000021F4  4243                     263      CLR     D3
 000021F6  43F8 4800                264      LEA     $4800,A1
 000021FA  363C 00FA                265      MOVE.W  #DAMAGE_EMISSION_THREE,D3
 000021FE  1411                     266      MOVE.B  (A1),D2
-00002200  43F9 000036D0            267      LEA     ABILITY_DAMAGE_MSG,A1
+00002200  43F9 000036EA            267      LEA     ABILITY_DAMAGE_MSG,A1
 00002206  103C 000E                268      MOVE.B  #14,D0
 0000220A  4E4F                     269      TRAP    #15
 0000220C  C6C2                     270      MULU    D2,D3
 0000220E  3203                     271      MOVE.W  D3,D1
 00002210  303C 0003                272      MOVE.W  #3,D0
 00002214  4E4F                     273      TRAP    #15
-00002216  6100 0808                274      BSR     ENDL
-0000221A  6100 0804                275      BSR     ENDL
+00002216  6100 0822                274      BSR     ENDL
+0000221A  6100 081E                275      BSR     ENDL
 0000221E                           276      
 0000221E  4241                     277      CLR     D1
-00002220  43F9 00003700            278      LEA     ABILITY_LEVEL_MSG,A1
+00002220  43F9 0000371A            278      LEA     ABILITY_LEVEL_MSG,A1
 00002226  103C 000E                279      MOVE.B  #14,D0
 0000222A  4E4F                     280      TRAP    #15
 0000222C  43F8 4500                281      LEA     $4500,A1
 00002230  1211                     282      MOVE.B  (A1),D1
 00002232  103C 0003                283      MOVE.B  #3,D0
 00002236  4E4F                     284      TRAP    #15
-00002238  6100 07E6                285      BSR     ENDL
-0000223C  6100 07E2                286      BSR     ENDL
-00002240  6100 07DE                287      BSR     ENDL   
+00002238  6100 0800                285      BSR     ENDL
+0000223C  6100 07FC                286      BSR     ENDL
+00002240  6100 07F8                287      BSR     ENDL   
 00002244  6100 FE7C                288      BSR     INITIALS_D
 00002248                           289      
 00002248                           290      
 00002248                           291  PICK_2:
-00002248  43F9 00003750            292      LEA     SECOND_PICK,A1
+00002248  43F9 0000376A            292      LEA     SECOND_PICK,A1
 0000224E  103C 000E                293      MOVE.B  #14,D0
 00002252  4E4F                     294      TRAP    #15
-00002254  6100 07CA                295      BSR     ENDL
-00002258  6100 07C6                296      BSR     ENDL
+00002254  6100 07E4                295      BSR     ENDL
+00002258  6100 07E0                296      BSR     ENDL
 0000225C                           297      
-0000225C  43F9 00003635            298      LEA     STYLE_DAMAGE_MSG,A1
+0000225C  43F9 0000364F            298      LEA     STYLE_DAMAGE_MSG,A1
 00002262  103C 000E                299      MOVE.B  #14,D0
 00002266  4E4F                     300      TRAP    #15
 00002268                           301      
 00002268  323C 0096                302      MOVE.W  #DAMAGE_EMISSION_TWO,D1
 0000226C  303C 0003                303      MOVE.W  #3,D0
 00002270  4E4F                     304      TRAP    #15
-00002272  6100 07AC                305      BSR     ENDL
-00002276  6100 07A8                306      BSR     ENDL
+00002272  6100 07C6                305      BSR     ENDL
+00002276  6100 07C2                306      BSR     ENDL
 0000227A                           307      
-0000227A  43F9 00003668            308      LEA     STAMINA_NORMAL_MSG,A1
+0000227A  43F9 00003682            308      LEA     STAMINA_NORMAL_MSG,A1
 00002280  103C 000E                309      MOVE.B  #14,D0
 00002284  4E4F                     310      TRAP    #15
 00002286  323C 0004                311      MOVE.W  #STAMINA_DEC_2,D1
 0000228A  303C 0003                312      MOVE.W  #3,D0
 0000228E  4E4F                     313      TRAP    #15
-00002290  6100 078E                314      BSR     ENDL
-00002294  6100 078A                315      BSR     ENDL 
+00002290  6100 07A8                314      BSR     ENDL
+00002294  6100 07A4                315      BSR     ENDL 
 00002298                           316      
-00002298  43F9 0000369C            317      LEA     STAMINA_USE_MSG,A1
+00002298  43F9 000036B6            317      LEA     STAMINA_USE_MSG,A1
 0000229E  103C 000E                318      MOVE.B  #14,D0
 000022A2  4E4F                     319      TRAP    #15
 000022A4  323C 000C                320      MOVE.W  #4*3,D1
 000022A8  303C 0003                321      MOVE.W  #3,D0
 000022AC  4E4F                     322      TRAP    #15
-000022AE  6100 0770                323      BSR     ENDL
-000022B2  6100 076C                324      BSR     ENDL
+000022AE  6100 078A                323      BSR     ENDL
+000022B2  6100 0786                324      BSR     ENDL
 000022B6                           325      
 000022B6  4242                     326      CLR     D2
 000022B8  4243                     327      CLR     D3
 000022BA  43F8 4800                328      LEA     $4800,A1
 000022BE  363C 0096                329      MOVE.W  #DAMAGE_EMISSION_TWO,D3
 000022C2  1411                     330      MOVE.B  (A1),D2
-000022C4  43F9 000036D0            331      LEA     ABILITY_DAMAGE_MSG,A1
+000022C4  43F9 000036EA            331      LEA     ABILITY_DAMAGE_MSG,A1
 000022CA  103C 000E                332      MOVE.B  #14,D0
 000022CE  4E4F                     333      TRAP    #15
 000022D0  C6C2                     334      MULU    D2,D3
 000022D2  3203                     335      MOVE.W  D3,D1
 000022D4  303C 0003                336      MOVE.W  #3,D0
 000022D8  4E4F                     337      TRAP    #15
-000022DA  6100 0744                338      BSR     ENDL
-000022DE  6100 0740                339      BSR     ENDL
+000022DA  6100 075E                338      BSR     ENDL
+000022DE  6100 075A                339      BSR     ENDL
 000022E2                           340      
 000022E2  4241                     341      CLR     D1
-000022E4  43F9 00003700            342      LEA     ABILITY_LEVEL_MSG,A1
+000022E4  43F9 0000371A            342      LEA     ABILITY_LEVEL_MSG,A1
 000022EA  103C 000E                343      MOVE.B  #14,D0
 000022EE  4E4F                     344      TRAP    #15
 000022F0  43F8 4500                345      LEA     $4500,A1
 000022F4  1211                     346      MOVE.B  (A1),D1
 000022F6  103C 0003                347      MOVE.B  #3,D0
 000022FA  4E4F                     348      TRAP    #15
-000022FC  6100 0722                349      BSR     ENDL
-00002300  6100 071E                350      BSR     ENDL
-00002304  6100 071A                351      BSR     ENDL
+000022FC  6100 073C                349      BSR     ENDL
+00002300  6100 0738                350      BSR     ENDL
+00002304  6100 0734                351      BSR     ENDL
 00002308  6100 FDB8                352      BSR     INITIALS_D
 0000230C                           353  PICK_3:
-0000230C  43F9 0000376C            354      LEA     THIRD_PICK,A1
+0000230C  43F9 00003786            354      LEA     THIRD_PICK,A1
 00002312  103C 000E                355      MOVE.B  #14,D0
 00002316  4E4F                     356      TRAP    #15
-00002318  6100 0706                357      BSR     ENDL
-0000231C  6100 0702                358      BSR     ENDL
+00002318  6100 0720                357      BSR     ENDL
+0000231C  6100 071C                358      BSR     ENDL
 00002320                           359      
-00002320  43F9 00003635            360      LEA     STYLE_DAMAGE_MSG,A1
+00002320  43F9 0000364F            360      LEA     STYLE_DAMAGE_MSG,A1
 00002326  103C 000E                361      MOVE.B  #14,D0
 0000232A  4E4F                     362      TRAP    #15
 0000232C                           363      
 0000232C  323C 004B                364      MOVE.W  #DAMAGE_EMISSION_ONE,D1
 00002330  303C 0003                365      MOVE.W  #3,D0
 00002334  4E4F                     366      TRAP    #15
-00002336  6100 06E8                367      BSR     ENDL
-0000233A  6100 06E4                368      BSR     ENDL
+00002336  6100 0702                367      BSR     ENDL
+0000233A  6100 06FE                368      BSR     ENDL
 0000233E                           369      
-0000233E  43F9 00003668            370      LEA     STAMINA_NORMAL_MSG,A1
+0000233E  43F9 00003682            370      LEA     STAMINA_NORMAL_MSG,A1
 00002344  103C 000E                371      MOVE.B  #14,D0
 00002348  4E4F                     372      TRAP    #15
 0000234A  323C 0002                373      MOVE.W  #STAMINA_DEC_1,D1
 0000234E  303C 0003                374      MOVE.W  #3,D0
 00002352  4E4F                     375      TRAP    #15
-00002354  6100 06CA                376      BSR     ENDL
-00002358  6100 06C6                377      BSR     ENDL 
+00002354  6100 06E4                376      BSR     ENDL
+00002358  6100 06E0                377      BSR     ENDL 
 0000235C                           378      
-0000235C  43F9 0000369C            379      LEA     STAMINA_USE_MSG,A1
+0000235C  43F9 000036B6            379      LEA     STAMINA_USE_MSG,A1
 00002362  103C 000E                380      MOVE.B  #14,D0
 00002366  4E4F                     381      TRAP    #15
 00002368  323C 0006                382      MOVE.W  #2*3,D1
 0000236C  303C 0003                383      MOVE.W  #3,D0
 00002370  4E4F                     384      TRAP    #15
-00002372  6100 06AC                385      BSR     ENDL
-00002376  6100 06A8                386      BSR     ENDL
+00002372  6100 06C6                385      BSR     ENDL
+00002376  6100 06C2                386      BSR     ENDL
 0000237A                           387      
 0000237A  4242                     388      CLR     D2
 0000237C  4243                     389      CLR     D3
 0000237E  43F8 4800                390      LEA     $4800,A1
 00002382  363C 004B                391      MOVE.W  #DAMAGE_EMISSION_ONE,D3
 00002386  1411                     392      MOVE.B  (A1),D2
-00002388  43F9 000036D0            393      LEA     ABILITY_DAMAGE_MSG,A1
+00002388  43F9 000036EA            393      LEA     ABILITY_DAMAGE_MSG,A1
 0000238E  103C 000E                394      MOVE.B  #14,D0
 00002392  4E4F                     395      TRAP    #15
 00002394  C6C2                     396      MULU    D2,D3
 00002396  3203                     397      MOVE.W  D3,D1
 00002398  303C 0003                398      MOVE.W  #3,D0
 0000239C  4E4F                     399      TRAP    #15
-0000239E  6100 0680                400      BSR     ENDL
-000023A2  6100 067C                401      BSR     ENDL
+0000239E  6100 069A                400      BSR     ENDL
+000023A2  6100 0696                401      BSR     ENDL
 000023A6                           402      
 000023A6  4241                     403      CLR     D1
-000023A8  43F9 00003700            404      LEA     ABILITY_LEVEL_MSG,A1
+000023A8  43F9 0000371A            404      LEA     ABILITY_LEVEL_MSG,A1
 000023AE  103C 000E                405      MOVE.B  #14,D0
 000023B2  4E4F                     406      TRAP    #15
 000023B4  43F8 4500                407      LEA     $4500,A1
 000023B8  1211                     408      MOVE.B  (A1),D1
 000023BA  103C 0003                409      MOVE.B  #3,D0
 000023BE  4E4F                     410      TRAP    #15
-000023C0  6100 065E                411      BSR     ENDL
-000023C4  6100 065A                412      BSR     ENDL
-000023C8  6100 0656                413      BSR     ENDL
+000023C0  6100 0678                411      BSR     ENDL
+000023C4  6100 0674                412      BSR     ENDL
+000023C8  6100 0670                413      BSR     ENDL
 000023CC  6100 FCF4                414      BSR     INITIALS_D
 000023D0                           415   
 000023D0                           416  *-------------------------------------------------------
@@ -422,9 +422,9 @@ Created On: 15/03/2022 18:58:21
 000023D0                           418  * 
 000023D0                           419  *------------------------------------------------------- 
 000023D0                           420  UPDATE:
-000023D0  6100 064E                421      BSR     ENDL            PRINT A CR AND LF
-000023D4  6100 04D2                422      BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
-000023D8  6100 04CE                423      BSR     DECORATE
+000023D0  6100 0668                421      BSR     ENDL            PRINT A CR AND LF
+000023D4  6100 04EC                422      BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
+000023D8  6100 04E8                423      BSR     DECORATE
 000023DC                           424      
 000023DC                           425                               *INCREMENTS THE DAYS
 000023DC  4241                     426      CLR     D1
@@ -456,37 +456,37 @@ Created On: 15/03/2022 18:58:21
 00002420                           452  *-----------------ATTACK MODE--------------------
 00002420                           453  *------------------------------------------------------- 
 00002420                           454  ATTACK_EMISSION:
-00002420  6100 04A6                455      BSR     CLEAR_SCREEN
-00002424  6100 0482                456      BSR     DECORATE
-00002428  6100 049E                457      BSR     CLEAR_SCREEN
-0000242C  6100 047A                458      BSR     DECORATE
-00002430  6100 0496                459      BSR     CLEAR_SCREEN
-00002434  6100 05EA                460      BSR     ENDL
-00002438  6100 046E                461      BSR     DECORATE
-0000243C  43F9 000039B4            462      LEA     BATTLEFIELD_MSG,A1
+00002420  6100 04C0                455      BSR     CLEAR_SCREEN
+00002424  6100 049C                456      BSR     DECORATE
+00002428  6100 04B8                457      BSR     CLEAR_SCREEN
+0000242C  6100 0494                458      BSR     DECORATE
+00002430  6100 04B0                459      BSR     CLEAR_SCREEN
+00002434  6100 0604                460      BSR     ENDL
+00002438  6100 0488                461      BSR     DECORATE
+0000243C  43F9 000039CE            462      LEA     BATTLEFIELD_MSG,A1
 00002442  103C 000E                463      MOVE.B  #14,D0
 00002446  4E4F                     464      TRAP    #15
-00002448  6100 05D6                465      BSR     ENDL
+00002448  6100 05F0                465      BSR     ENDL
 0000244C                           466      
-0000244C  43F9 00003BAA            467      LEA     ENEMIES_KILLED_TODAY,A1
+0000244C  43F9 00003BC4            467      LEA     ENEMIES_KILLED_TODAY,A1
 00002452  103C 000E                468      MOVE.B  #14,D0
 00002456  4E4F                     469      TRAP    #15
 00002458  43F9 00010000            470      LEA     $10000,A1
 0000245E  3211                     471      MOVE.W  (A1),D1
 00002460  103C 0003                472      MOVE.B  #3,D0
 00002464  4E4F                     473      TRAP    #15
-00002466  6100 05B8                474      BSR     ENDL
+00002466  6100 05D2                474      BSR     ENDL
 0000246A                           475      
-0000246A  43F9 00003BBD            476      LEA     EMISSION_SLASHED_TODAY,A1
+0000246A  43F9 00003BD7            476      LEA     EMISSION_SLASHED_TODAY,A1
 00002470  103C 000E                477      MOVE.B  #14,D0
 00002474  4E4F                     478      TRAP    #15
 00002476  43F9 00011000            479      LEA     $11000,A1
 0000247C  3211                     480      MOVE.W  (A1),D1
 0000247E  103C 0003                481      MOVE.B  #3,D0
 00002482  4E4F                     482      TRAP    #15
-00002484  6100 059A                483      BSR     ENDL
+00002484  6100 05B4                483      BSR     ENDL
 00002488  6100 FCA2                484      BSR     STAMINA_DISPLAY
-0000248C  6100 0592                485      BSR     ENDL
+0000248C  6100 05AC                485      BSR     ENDL
 00002490                           486      
 00002490  4241                     487      CLR     D1
 00002492  103C 0004                488      MOVE.B  #4,D0
@@ -494,7 +494,7 @@ Created On: 15/03/2022 18:58:21
 00002498  103C 0003                490      MOVE.B  #3,D0
 0000249C                           491      
 0000249C  B27C 0000                492      CMP     #0,D1
-000024A0  6700 0534                493      BEQ     REPLAY
+000024A0  6700 054E                493      BEQ     REPLAY
 000024A4                           494      
 000024A4  B27C 0001                495      CMP     #1,D1
 000024A8  6700 0012                496      BEQ     ATTACK_ENEMY
@@ -502,7 +502,7 @@ Created On: 15/03/2022 18:58:21
 000024AC  B27C 0002                498      CMP     #2,D1
 000024B0  6700 0170                499      BEQ     ATTACK_DIRECTLY
 000024B4                           500      
-000024B4  6100 041E                501      BSR     HALT    
+000024B4  6100 0438                501      BSR     HALT    
 000024B8  4EF8 2420                502      JMP     ATTACK_EMISSION
 000024BC                           503      
 000024BC                           504  ATTACK_ENEMY:
@@ -628,11 +628,11 @@ Created On: 15/03/2022 18:58:21
 00002606                           624      
 00002606  4EF8 2420                625      JMP     ATTACK_EMISSION
 0000260A                           626  NO_STAMINA:
-0000260A  6100 0414                627      BSR     ENDL
-0000260E  43F9 00003BD6            628      LEA     OUT_STAMINA_MSG,A1
+0000260A  6100 042E                627      BSR     ENDL
+0000260E  43F9 00003BF0            628      LEA     OUT_STAMINA_MSG,A1
 00002614  103C 000E                629      MOVE.B  #14,D0
 00002618  4E4F                     630      TRAP    #15
-0000261A  6100 02B8                631      BSR     HALT
+0000261A  6100 02D2                631      BSR     HALT
 0000261E  4EF8 2420                632      JMP     ATTACK_EMISSION
 00002622                           633      
 00002622                           634  *---------------------------------------------------ATTACK DIRECTLY----------------------------------*    
@@ -778,762 +778,770 @@ Created On: 15/03/2022 18:58:21
 00002784                           774  * NUMBER OF WEAPONS
 00002784                           775  *-------------------------------------------------------   
 00002784                           776  WEAPONS:
-00002784  6100 0142                777      BSR     CLEAR_SCREEN
-00002788  6100 011E                778      BSR     DECORATE
-0000278C  6100 013A                779      BSR     CLEAR_SCREEN
-00002790  6100 0116                780      BSR     DECORATE
-00002794  6100 0132                781      BSR     CLEAR_SCREEN
-00002798  6100 0286                782      BSR     ENDL
-0000279C  43F9 000031DB            783      LEA     STYLE_TITLE,A1
+00002784  6100 015C                777      BSR     CLEAR_SCREEN
+00002788  6100 0138                778      BSR     DECORATE
+0000278C  6100 0154                779      BSR     CLEAR_SCREEN
+00002790  6100 0130                780      BSR     DECORATE
+00002794  6100 014C                781      BSR     CLEAR_SCREEN
+00002798  6100 02A0                782      BSR     ENDL
+0000279C  43F9 000031F5            783      LEA     STYLE_TITLE,A1
 000027A2  103C 000E                784      MOVE.B  #14,D0
 000027A6  4E4F                     785      TRAP    #15
-000027A8  6100 0276                786      BSR     ENDL
-000027AC  43F9 0000322B            787      LEA     STYLE_MSG,A1
+000027A8  6100 0290                786      BSR     ENDL
+000027AC  43F9 00003245            787      LEA     STYLE_MSG,A1
 000027B2  103C 000E                788      MOVE.B  #14,D0
 000027B6  4E4F                     789      TRAP    #15
 000027B8  103C 0004                790      MOVE.B  #4,D0
 000027BC  4E4F                     791      TRAP    #15
 000027BE  11C1 4100                792      MOVE.B  D1,$4100
-000027C2  4EF9 00002904            793      JMP     LORE
+000027C2  4EF9 0000291E            793      JMP     LORE
 000027C8                           794  
 000027C8                           795  *-------------------------------------------------------
 000027C8                           796  *-------------------------SHOP--------------------------
 000027C8                           797  *------------------------------------------------------- 
 000027C8                           798  SHOP_ENTER:
-000027C8  6100 00FE                799      BSR     CLEAR_SCREEN
-000027CC  6100 00DA                800      BSR     DECORATE
-000027D0  6100 00F6                801      BSR     CLEAR_SCREEN
-000027D4  6100 00D2                802      BSR     DECORATE
-000027D8  6100 00EE                803      BSR     CLEAR_SCREEN
-000027DC  6100 0242                804      BSR     ENDL
-000027E0  6100 00C6                805      BSR     DECORATE
-000027E4  43F9 00003C31            806      LEA     SHOP_MSG,A1
+000027C8  6100 0118                799      BSR     CLEAR_SCREEN
+000027CC  6100 00F4                800      BSR     DECORATE
+000027D0  6100 0110                801      BSR     CLEAR_SCREEN
+000027D4  6100 00EC                802      BSR     DECORATE
+000027D8  6100 0108                803      BSR     CLEAR_SCREEN
+000027DC  6100 025C                804      BSR     ENDL
+000027E0  6100 00E0                805      BSR     DECORATE
+000027E4  43F9 00003C4B            806      LEA     SHOP_MSG,A1
 000027EA  103C 000E                807      MOVE.B  #14,D0
 000027EE  4E4F                     808      TRAP    #15
 000027F0  6100 F958                809      BSR     MONEY_DISPLAY
-000027F4  6100 022A                810      BSR     ENDL
-000027F8  6100 0226                811      BSR     ENDL
-000027FC  6100 0222                812      BSR     ENDL
-00002800  43F9 00003895            813      LEA     SHOP_ITEM1_MSG,A1
+000027F4  6100 0244                810      BSR     ENDL
+000027F8  6100 0240                811      BSR     ENDL
+000027FC  6100 023C                812      BSR     ENDL
+00002800  43F9 000038AF            813      LEA     SHOP_ITEM1_MSG,A1
 00002806  103C 000E                814      MOVE.B  #14,D0
 0000280A  4E4F                     815      TRAP    #15
-0000280C  6100 0212                816      BSR     ENDL
+0000280C  6100 022C                816      BSR     ENDL
 00002810  4241                     817      CLR     D1
 00002812  103C 0004                818      MOVE.B  #4,D0
 00002816  4E4F                     819      TRAP    #15
 00002818  B27C 0001                820      CMP     #1,D1
 0000281C  6700 000C                821      BEQ     BOUGHT_ABILITY_LEVEL
 00002820                           822      
-00002820  6100 0086                823      BSR     DECORATE
-00002824  4EF9 000029D6            824      JMP     REPLAY
+00002820  6100 00A0                823      BSR     DECORATE
+00002824  4EF9 000029F0            824      JMP     REPLAY
 0000282A                           825      
 0000282A                           826  BOUGHT_ABILITY_LEVEL:
 0000282A  4241                     827      CLR     D1
 0000282C  4242                     828      CLR     D2
 0000282E  43F9 00008000            829      LEA     $8000,A1
 00002834  3211                     830      MOVE.W  (A1),D1
-00002836  343C 05DC                831      MOVE.W  #1500,D2
+00002836  343C 03E8                831      MOVE.W  #1000,D2
 0000283A  B242                     832      CMP     D2,D1
-0000283C  6D00 002A                833      BLT     NOT_ENOUGH_MONEY
+0000283C  6D00 0044                833      BLT     NOT_ENOUGH_MONEY
 00002840                           834      
 00002840  4241                     835      CLR     D1
 00002842  4242                     836      CLR     D2
-00002844  43F8 4800                837      LEA     $4800,A1
-00002848  41F8 4500                838      LEA     $4500,A0
-0000284C  1211                     839      MOVE.B  (A1),D1
-0000284E  1410                     840      MOVE.B  (A0),D2
-00002850  5201                     841      ADD.B   #1,D1
-00002852  5202                     842      ADD.B   #1,D2
-00002854  11C1 4800                843      MOVE.B  D1,$4800
-00002858  11C2 4500                844      MOVE.B  D2,$4500
-0000285C  43F8 4800                845      LEA     $4800,A1
-00002860  41F8 4500                846      LEA     $4500,A0
-00002864  4EF8 27C8                847      JMP     SHOP_ENTER
-00002868                           848  NOT_ENOUGH_MONEY:
-00002868  6100 01B6                849      BSR     ENDL
-0000286C  6100 01B2                850      BSR     ENDL
-00002870  43F9 000038BA            851      LEA     NO_MONEY_MSG,A1
-00002876  103C 000E                852      MOVE.B  #14,D0
-0000287A  4E4F                     853      TRAP    #15
-0000287C  6100 0056                854      BSR     HALT
-00002880  4EF8 27C8                855      JMP     SHOP_ENTER
-00002884                           856            
-00002884                           857      
-00002884                           858  *-------------------------------------------------------
-00002884                           859  *-----------------HEADS UP DISPLAY (SCORE)--------------
-00002884                           860  * RETRIEVES THE SCORE FROM MEMORY LOCATION
-00002884                           861  *-------------------------------------------------------   
-00002884                           862  HUD:
-00002884                           863  
-00002884  6100 019A                864      BSR     ENDL
-00002888  6100 001E                865      BSR     DECORATE
-0000288C  4241                     866      CLR     D1
-0000288E  6100 0018                867      BSR     DECORATE
-00002892  4E75                     868      RTS
-00002894                           869  
-00002894                           870  *-------------------------------------------------------
-00002894                           871  *--------------------------LOOP-------------------------
-00002894                           872  *   -------------------------------------------------------
-00002894                           873  LOOP:
-00002894  163C 0005                874      MOVE.B  #5, D3 LOOP COUNTER D3=5
-00002898                           875  NEXT:
-00002898  43F9 00003399            876      LEA     LOOP_MSG,A1
-0000289E  103C 000E                877      MOVE.B  #14,D0
-000028A2  4E4F                     878      TRAP    #15
-000028A4  5343                     879      SUB     #1,D3   DECREMENT LOOP COUNTER
-000028A6  66F0                     880      BNE     NEXT    REPEAT UNTIL D0=0
-000028A8                           881  
-000028A8                           882  *-------------------------------------------------------
-000028A8                           883  *------------------SCREEN DECORATION--------------------
-000028A8                           884  *-------------------------------------------------------
-000028A8                           885  DECORATE:
-000028A8  4243                     886      CLR     D3
-000028AA  163C 003C                887      MOVE.B  #60, D3
-000028AE  6100 0170                888      BSR     ENDL
-000028B2                           889  OUT:
-000028B2  43F9 00003399            890      LEA     LOOP_MSG,A1
-000028B8  103C 000E                891      MOVE.B  #14,D0
-000028BC  4E4F                     892      TRAP    #15
-000028BE  5343                     893      SUB     #1,D3   DECREMENT LOOP COUNTER
-000028C0  66F0                     894      BNE     OUT     REPEAT UNTIL D0=0
-000028C2  6100 015C                895      BSR     ENDL
-000028C6  4E75                     896      RTS
-000028C8                           897      
-000028C8                           898  CLEAR_SCREEN: 
-000028C8  103C 000B                899      MOVE.B  #11,D0      CLEAR SCREEN
-000028CC  323C FF00                900      MOVE.W  #$FF00,D1
-000028D0  4E4F                     901      TRAP    #15
-000028D2  4E75                     902      RTS
-000028D4                           903  HALT:
-000028D4  103C 0004                904      MOVE.B  #4,D0
-000028D8  4E4F                     905      TRAP    #15
-000028DA  4E75                     906      RTS
-000028DC                           907  ASK_PLAY:
-000028DC  6100 0142                908      BSR     ENDL
-000028E0  61C6                     909      BSR     DECORATE
-000028E2  6100 013C                910      BSR     ENDL
-000028E6  43F9 00003904            911      LEA     ASK_MSG,A1
-000028EC  103C 000E                912      MOVE.B  #14,D0
-000028F0  4E4F                     913      TRAP    #15
-000028F2  6100 012C                914      BSR     ENDL
-000028F6  61B0                     915      BSR     DECORATE
-000028F8  61DA                     916      BSR     HALT
-000028FA  B27C 0000                917      CMP     #EXIT,D1
-000028FE  6700 F706                918      BEQ     END
-00002902  4E75                     919      RTS
-00002904                           920  LORE:
-00002904  4241                     921      CLR     D1
-00002906  1238 4100                922      MOVE.B  $4100,D1
-0000290A  B27C 0002                923      CMP     #2,D1       IS D1 == 2?
-0000290E  6700 0036                924      BEQ     LORE_2      
-00002912                           925      
-00002912  B27C 0002                926      CMP     #2,D1       IS D1 < 2?
-00002916  6D00 000A                927      BLT     LORE_1
-0000291A                           928      
-0000291A  B27C 0002                929      CMP     #2,D1       IS D1 > 2?
-0000291E  6E00 0052                930      BGT     LORE_3
-00002922                           931  LORE_1:
-00002922  61A4                     932      BSR     CLEAR_SCREEN
-00002924  6182                     933      BSR     DECORATE
-00002926  61A0                     934      BSR     CLEAR_SCREEN
-00002928  6100 FF7E                935      BSR     DECORATE
-0000292C  619A                     936      BSR     CLEAR_SCREEN
-0000292E  6100 00F0                937      BSR     ENDL
-00002932  43F9 00003DE7            938      LEA     LORE1_MSG,A1
-00002938  103C 000E                939      MOVE.B  #14,D0
-0000293C  4E4F                     940      TRAP    #15
-0000293E  6194                     941      BSR     HALT
-00002940  6100 005E                942      BSR     CONFIRM_STYLE
-00002944  4E75                     943      RTS
-00002946                           944  
-00002946                           945  LORE_2:
-00002946  6180                     946      BSR     CLEAR_SCREEN
-00002948  6100 FF5E                947      BSR     DECORATE
-0000294C  6100 FF7A                948      BSR     CLEAR_SCREEN
-00002950  6100 FF56                949      BSR     DECORATE
-00002954  6100 FF72                950      BSR     CLEAR_SCREEN
-00002958  6100 00C6                951      BSR     ENDL
-0000295C  43F9 0000412B            952      LEA     LORE2_MSG,A1
-00002962  103C 000E                953      MOVE.B  #14,D0
-00002966  4E4F                     954      TRAP    #15
-00002968  6100 FF6A                955      BSR     HALT
-0000296C  6100 0032                956      BSR     CONFIRM_STYLE
-00002970  4E75                     957      RTS
-00002972                           958  
-00002972                           959  LORE_3:
-00002972  6100 FF54                960      BSR     CLEAR_SCREEN
-00002976  6100 FF30                961      BSR     DECORATE
-0000297A  6100 FF4C                962      BSR     CLEAR_SCREEN
-0000297E  6100 FF28                963      BSR     DECORATE
-00002982  6100 FF44                964      BSR     CLEAR_SCREEN
-00002986  6100 0098                965      BSR     ENDL
-0000298A  43F9 000044AC            966      LEA     LORE3_MSG,A1
-00002990  103C 000E                967      MOVE.B  #14,D0
-00002994  4E4F                     968      TRAP    #15
-00002996  6100 FF3C                969      BSR     HALT
-0000299A  6100 0004                970      BSR     CONFIRM_STYLE
-0000299E  4E75                     971      RTS
-000029A0                           972  CONFIRM_STYLE:
-000029A0  6100 FF26                973      BSR     CLEAR_SCREEN
-000029A4  6100 FF02                974      BSR     DECORATE
-000029A8  6100 FF1E                975      BSR     CLEAR_SCREEN
-000029AC  6100 FEFA                976      BSR     DECORATE
-000029B0  6100 FF16                977      BSR     CLEAR_SCREEN
-000029B4  43F9 000048C0            978      LEA     RECONSIDER_MSG,A1
-000029BA  103C 000E                979      MOVE.B  #14,D0
-000029BE  4E4F                     980      TRAP    #15
-000029C0  103C 0004                981      MOVE.B  #4,D0
-000029C4  4E4F                     982      TRAP    #15
-000029C6                           983      
-000029C6  B27C 0001                984      CMP     #1,D1
-000029CA  6700 F6A4                985      BEQ     STATS
-000029CE                           986      
-000029CE  B27C 0000                987      CMP     #0,D1
-000029D2  6700 F680                988      BEQ     INPUT
-000029D6                           989  *-------------------------------------------------------
-000029D6                           990  *------------------------REPLAY-------------------------
-000029D6                           991  *-------------------------------------------------------
-000029D6                           992  REPLAY:
-000029D6  6100 FEF0                993      BSR     CLEAR_SCREEN
-000029DA  6100 0044                994      BSR     ENDL
-000029DE  43F9 0000339B            995      LEA     REPLAY_MSG,A1
-000029E4  103C 000E                996      MOVE.B  #14,D0
-000029E8  4E4F                     997      TRAP    #15
-000029EA  6100 0034                998      BSR     ENDL
-000029EE                           999      
-000029EE  103C 0004               1000      MOVE.B  #4,D0
-000029F2  4E4F                    1001      TRAP    #15
-000029F4                          1002      
-000029F4  B27C 0000               1003      CMP     #EXIT,D1
-000029F8  6700 F60C               1004      BEQ     END
-000029FC                          1005      
-000029FC  B27C 0001               1006      CMP     #STATISTICS,D1
-00002A00  6700 F66E               1007      BEQ     STATS
-00002A04                          1008      
-00002A04  B27C 0002               1009      CMP     #SHOP,D1
-00002A08  6700 FDBE               1010      BEQ     SHOP_ENTER
-00002A0C                          1011      
-00002A0C  B27C 0003               1012      CMP     #ATTACK,D1
-00002A10  6700 FA0E               1013      BEQ     ATTACK_EMISSION
-00002A14                          1014      
-00002A14  B27C 0004               1015      CMP     #NEXT_DAY,D1
-00002A18  6700 F640               1016      BEQ     GAMELOOP
-00002A1C                          1017      
-00002A1C  6100 F63C               1018      BSR     GAMELOOP
-00002A20                          1019  
-00002A20                          1020  ENDL:
-00002A20  48E7 8040               1021      MOVEM.L D0/A1,-(A7)
-00002A24  303C 000E               1022      MOVE    #14,D0
-00002A28  43F9 00002A36           1023      LEA     CRLF,A1
-00002A2E  4E4F                    1024      TRAP    #15
-00002A30  4CDF 0201               1025      MOVEM.L (A7)+,D0/A1
-00002A34  4E75                    1026      RTS
-00002A36                          1027      
-00002A36                          1028  *-------------------------------------------------------
-00002A36                          1029  *-------------------DATA DELARATIONS--------------------
-00002A36                          1030  *-------------------------------------------------------
-00002A36                          1031  
-00002A36= 0D 0A 00                1032  CRLF:           DC.B    $0D,$0A,0
-00002A39= 2D 2D 2D 2D 2D 2D ...   1033  WELCOME_MSG:    DC.B    '---------------------------------------.----------------------------------------'
-00002A89= 0D 0A                   1034                  DC.B    $0D,$0A
-00002A8B= 0D 0A                   1035                  DC.B    $0D,$0A
-00002A8D=                         1036                  DC.B    ''
-00002A8D= 20 20 20 20 20 20 ...   1037                  DC.B    '                                Wan(o) (e)mission '
-00002ABF= 0D 0A                   1038                  DC.B    $0D,$0A
-00002AC1= 0D 0A                   1039                  DC.B    $0D,$0A
-00002AC3=                         1040                  DC.B    ''
-00002AC3= 2D 2D 2D 2D 2D 2D ...   1041                  DC.B    '---------------------------------------.----------------------------------------'
-00002B13= 0D 0A                   1042                  DC.B    $0D,$0A
-00002B15=                         1043                  DC.B    ''
-00002B15= 0D 0A                   1044                  DC.B    $0D,$0A
-00002B17=                         1045                  DC.B    ''
-00002B17= 0D 0A                   1046                  DC.B    $0D,$0A
-00002B19= 20 20 20 20 20 20 ...   1047                  DC.B    '                           PRESS <ENTER> TO START',0
-00002B4B= 2D 2D 2D 2D 2D 2D ...   1048  STARTING_INFO:  DC.B    '---------------------------------------.----------------------------------------'
-00002B9B= 0D 0A                   1049                  DC.B    $0D,$0A
-00002B9D= 20 20 20 20 20 20 ...   1050                  DC.B    '               - Welcome swordsman-gozaru,'
-00002BC7= 0D 0A                   1051                  DC.B    $0D,$0A
-00002BC9=                         1052                  DC.B    ''
-00002BC9= 0D 0A                   1053                  DC.B    $0D,$0A
-00002BCB= 20 20 20 20 20 74 ...   1054                  DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial'
-00002C12= 0D 0A                   1055                  DC.B    $0D,$0A
-00002C14=                         1056                  DC.B    ''
-00002C14= 0D 0A                   1057                  DC.B    $0D,$0A
-00002C16= 20 20 20 20 20 62 ...   1058                  DC.B    '     beings from space, that are a threat, not even to the Wano kingdom,  '
-00002C60= 0D 0A                   1059                  DC.B    $0D,$0A
-00002C62=                         1060                  DC.B    ''
-00002C62= 0D 0A                   1061                  DC.B    $0D,$0A
-00002C64= 20 20 20 20 20 62 ...   1062                  DC.B    '     but the world itself!'
-00002C7E= 0D 0A                   1063                  DC.B    $0D,$0A
-00002C80= 20 20 20 20 20 41 ...   1064                  DC.B    '     Amanto feeds off the oxygen of the earths atmosphere, '
-00002CBB= 0D 0A                   1065                  DC.B    $0D,$0A
-00002CBD= 20 20 20 20 20 20 ...   1066                  DC.B    '                                                 '
-00002CEE= 0D 0A                   1067                  DC.B    $0D,$0A
-00002CF0= 20 20 20 20 20 6C ...   1068                  DC.B    '     leaving the air with pure Carbon Dioxide.  '
-00002D20= 0D 0A                   1069                  DC.B    $0D,$0A
-00002D22= 20 20 20 20 20 20 ...   1070                  DC.B    '                                                 '
-00002D53= 0D 0A                   1071                  DC.B    $0D,$0A
-00002D55= 2E 2D 2D 2D 2D 2D ...   1072                  DC.B    '.------------------------------------------------------------------------------.'
-00002DA5= 0D 0A                   1073                  DC.B    $0D,$0A
-00002DA7= 20 20 20 20 20 20 ...   1074                  DC.B    '                                                 '
-00002DD8= 0D 0A                   1075                  DC.B    $0D,$0A
-00002DDA= 20 20 20 20 20 20 ...   1076                  DC.B    '               - Your (E)mission is to fight the Amanto using the swordstyles'
-00002E27= 0D 0A                   1077                  DC.B    $0D,$0A
-00002E29= 20 20 20 20 20 20 ...   1078                  DC.B    '                                                   '
-00002E5C= 0D 0A                   1079                  DC.B    $0D,$0A
-00002E5E= 20 20 20 20 20 79 ...   1080                  DC.B    '     you have honed throughout the years,      '
-00002E8D= 0D 0A                   1081                  DC.B    $0D,$0A
-00002E8F= 20 20 20 20 20 20 ...   1082                  DC.B    '                                                   '
-00002EC2= 0D 0A                   1083                  DC.B    $0D,$0A
-00002EC4= 20 20 20 20 20 62 ...   1084                  DC.B    '     by using the mythical swords made out of Di-shards,'
-00002EFC= 0D 0A                   1085                  DC.B    $0D,$0A
-00002EFE= 20 20 20 20 20 20 ...   1086                  DC.B    '                                                   '
-00002F31= 0D 0A                   1087                  DC.B    $0D,$0A
-00002F33= 20 20 20 20 20 74 ...   1088                  DC.B    '     the mixture of Amanto brought metal and ancient shards.        '
-00002F77= 0D 0A                   1089                  DC.B    $0D,$0A
-00002F79= 20 20 20 20 20 20 ...   1090                  DC.B    '                                                   '
-00002FAC= 0D 0A                   1091                  DC.B    $0D,$0A
-00002FAE= 2E 2D 2D 2D 2D 2D ...   1092                  DC.B    '.-----------------------------------------------------------------------------.'
-00002FFD= 0D 0A                   1093                  DC.B    $0D,$0A
-00002FFF= 20 20 20 20 20 20 ...   1094                  DC.B    '                                                   '
-00003032= 0D 0A                   1095                  DC.B    $0D,$0A
-00003034= 20 20 20 20 20 20 ...   1096                  DC.B    '               - With the combination of combat skills and mythical swords,'
-0000307F= 0D 0A                   1097                  DC.B    $0D,$0A
-00003081= 20 20 20 20 20 20 ...   1098                  DC.B    '                                                   '
-000030B4= 0D 0A                   1099                  DC.B    $0D,$0A
-000030B6= 20 20 20 20 20 79 ...   1100                  DC.B    '     you have a chance to bring the tidings, all rests on your shoulders-gozaru.   '
-00003109= 0D 0A                   1101                  DC.B    $0D,$0A
-0000310B= 20 20 20 20 20 20 ...   1102                  DC.B    '                                                   '
-0000313E= 0D 0A                   1103                  DC.B    $0D,$0A
-00003140= 20 20 20 20 20 20 ...   1104                  DC.B    '                                                 '
-00003171= 0D 0A                   1105                  DC.B    $0D,$0A
-00003173= 2D 2D 2D 2D 2D 2D ...   1106                  DC.B    '---------------------------------------.----------------------------------------'
-000031C3= 0D 0A                   1107                  DC.B    $0D,$0A
-000031C5= 3C 45 4E 54 45 52 ...   1108                  DC.B    '<ENTER> To continue..',0
-000031DB= 20 2D 2D 2D 2D 2D ...   1109  STYLE_TITLE:    DC.B    ' ------------------------------- STYLE SELECTOR -------------------------------',0
-0000322B= 20 20 20 20 20 20 ...   1110  STYLE_MSG:      DC.B    '                           SELECT YOUR FIGHTING STYLE '
-00003261= 0D 0A                   1111                  DC.B    $0D,$0A
-00003263=                         1112                  DC.B    ''
-00003263= 0D 0A                   1113                  DC.B    $0D,$0A
-00003265=                         1114                  DC.B    ''
-00003265= 0D 0A                   1115                  DC.B    $0D,$0A
-00003267= 20 20 20 20 20 20 ...   1116                  DC.B    '                     - 1: Three swords style(///Santoryu) -'
-000032A2= 0D 0A                   1117                  DC.B    $0D,$0A
-000032A4=                         1118                  DC.B    ''
-000032A4= 0D 0A                   1119                  DC.B    $0D,$0A
-000032A6= 20 20 20 20 20 20 ...   1120                  DC.B    '                      - 2: Two swords style(//Nitoryu) -'
-000032DE= 0D 0A                   1121                  DC.B    $0D,$0A
-000032E0=                         1122                  DC.B    ''
-000032E0= 0D 0A                   1123                  DC.B    $0D,$0A
-000032E2= 20 20 20 20 20 20 ...   1124                  DC.B    '                       - 3: One sword style(/Ittoryu) -'
-00003319= 0D 0A                   1125                  DC.B    $0D,$0A
-0000331B=                         1126                  DC.B    ''
-0000331B= 0D 0A                   1127                  DC.B    $0D,$0A
-0000331D=                         1128                  DC.B    ''
-0000331D= 0D 0A                   1129                  DC.B    $0D,$0A
-0000331F= 2D 2D 2D 2D 2D 2D ...   1130                  DC.B    '---------------------------------------.----------------------------------------'
-0000336F= 0D 0A                   1131                  DC.B    $0D,$0A
-00003371= 20 20 20 20 20 20 ...   1132                  DC.B    '                                       ',0
-00003399= 2E 00                   1133  LOOP_MSG:       DC.B    '.',0
-0000339B= 20 20 20 2D 2D 2D ...   1134  REPLAY_MSG:     DC.B    '   ----------       What do you wish to do?       ----------                                       '
-000033FE= 0D 0A                   1135                  DC.B    $0D,$0A
-00003400= 20 20 20 20 20 20 ...   1136                  DC.B    '                                                 '
-00003431= 0D 0A                   1137                  DC.B    $0D,$0A
-00003433= 20 20 20 20 20 20 ...   1138                  DC.B    '               *Input: 1 to display the current statistics                                                 '
-0000349E= 0D 0A                   1139                  DC.B    $0D,$0A
-000034A0= 20 20 20 20 20 20 ...   1140                  DC.B    '               *Input: 2 to open the shop menu                                                 '
-000034FF= 0D 0A                   1141                  DC.B    $0D,$0A
-00003501= 20 20 20 20 20 20 ...   1142                  DC.B    '               *Input: 3 to fight the enemies                                                 '
-0000355F= 0D 0A                   1143                  DC.B    $0D,$0A
-00003561= 20 20 20 20 20 20 ...   1144                  DC.B    '               *Input: 4 to get to the next day'
-00003590= 0D 0A                   1145                  DC.B    $0D,$0A
-00003592= 20 20 20 20 20 20 ...   1146                  DC.B    '               *Input: 0 to EXIT the game                                                 '
-000035EC= 20 20 20 20 20 20 ...   1147                  DC.B    '                             ',0
-0000360A= 20 20 20 20 20 20 ...   1148  FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
-00003635= 20 20 20 20 20 20 ...   1149  STYLE_DAMAGE_MSG:       DC.B    '                            > - Your base damage: ',0
-00003668= 20 20 20 20 20 20 ...   1150  STAMINA_NORMAL_MSG:     DC.B    '                           > - Normal stamina use: ',0
-0000369C= 20 20 20 20 20 20 ...   1151  STAMINA_USE_MSG:        DC.B    '                          > - Ability stamina use: ',0
-000036D0= 20 20 20 20 20 20 ...   1152  ABILITY_DAMAGE_MSG:     DC.B    '                           > - Ability damage: ',0
-00003700= 20 20 20 20 20 20 ...   1153  ABILITY_LEVEL_MSG:      DC.B    '                            > - Ability level: ',0
-00003730= 54 68 72 65 65 20 ...   1154  FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
-00003750= 54 77 6F 20 73 77 ...   1155  SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
-0000376C= 4F 6E 65 20 73 77 ...   1156  THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
-00003786= 20 20 20 20 20 20 ...   1157  EMISSION:               DC.B    '                              > - C.EMISSION: ',0
-000037B5= 2E 2D 2D 2D 2D 2D ...   1158  STARTER_MSG:            DC.B    '.-----------------------------------. STATS .----------------------------------.'
-00003805= 0D 0A                   1159                          DC.B    $0D,$0A
-00003807= 00                      1160                          DC.B    '',0
-00003808= 20 20 20 20 20 20 ...   1161  ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
-00003839= 20 20 20 20 20 20 ...   1162  STAMINA_MSG:            DC.B    '                                > - STAMINA: ',0
-00003867= 20 20 20 20 20 20 ...   1163  MONEY_MSG:              DC.B    '                                > - BALANCE: ',0
-00003895= 20 3C 20 31 20 3E ...   1164  SHOP_ITEM1_MSG:         DC.B    ' < 1 > - Ability upgrade: 1000 GOLD ',0
-000038BA= 20 20 20 20 20 20 ...   1165  NO_MONEY_MSG:           DC.B    '          >>> Insuficient funds, try again after killing a few Amanto <<<',0
-00003904= 20 20 20 20 20 20 ...   1166  ASK_MSG:                DC.B    '                        Play?'
-00003921= 0D 0A                   1167                          DC.B    $0D,$0A
-00003923= 20 20 20 20 20 20 ...   1168                          DC.B    '                 To Play enter any number            '
-00003958= 0D 0A                   1169                          DC.B    $0D,$0A
-0000395A= 20 20 20 20 20 20 ...   1170                          DC.B    '                    To EXIT enter 0           ',0
-00003989= 20 20 20 20 20 20 ...   1171  DAYS_MSG:               DC.B    '                                 > - Day: ',0
-000039B4= 20 20 20 2D 2D 2D ...   1172  BATTLEFIELD_MSG:        DC.B    '   ----------       THE BATTLEFIELD       ----------                 '
-000039F9= 0D 0A                   1173                          DC.B    $0D,$0A
-000039FB= 20 20 20 20 20 20 ...   1174                          DC.B    '                                                 '
-00003A2C= 0D 0A                   1175                          DC.B    $0D,$0A
-00003A2E= 20 20 20 20 20 20 ...   1176                          DC.B    '      - You have entered the battlefield, prepare to battle  '
-00003A6B= 0D 0A                   1177                          DC.B    $0D,$0A
-00003A6D= 20 20 20 20 20 20 ...   1178                          DC.B    '      the Amanto and slash through the Carbon Dioxide with   '
-00003AAA= 0D 0A                   1179                          DC.B    $0D,$0A
-00003AAC= 20 20 20 20 20 20 ...   1180                          DC.B    '           your mighty swords to save the earth  '
-00003ADD= 0D 0A                   1181                          DC.B    $0D,$0A
-00003ADF= 20 20 20 20 20 20 ...   1182                          DC.B    '                                                 '
-00003B10= 0D 0A                   1183                          DC.B    $0D,$0A
-00003B12= 20 20 20 20 20 20 ...   1184                          DC.B    '           *To attack Amanto:             input 1'
-00003B43= 0D 0A                   1185                          DC.B    $0D,$0A
-00003B45= 20 20 20 20 20 20 ...   1186                          DC.B    '           *To attack Emission directly:  input 2'
-00003B76= 0D 0A                   1187                          DC.B    $0D,$0A
-00003B78= 20 20 20 20 20 20 ...   1188                          DC.B    '           *To return to the menu:        input 0',0
-00003BAA= 45 6E 65 6D 69 65 ...   1189  ENEMIES_KILLED_TODAY:   DC.B    'Enemies defeated: ',0
-00003BBD= 43 61 72 62 6F 6E ...   1190  EMISSION_SLASHED_TODAY: DC.B    'Carbon Dioxide slashed: ',0
-00003BD6= 20 20 20 20 20 20 ...   1191  OUT_STAMINA_MSG         DC.B    '      You are out of stamina, retreat warrior,'
-00003C04= 0D 0A                   1192                          DC.B    $0D,$0A
-00003C06= 20 20 20 20 20 20 ...   1193                          DC.B    '         you have done enough, for today..',0
-00003C31= 20 20 2D 2D 2D 2D ...   1194  SHOP_MSG:               DC.B    '  ----------           THE  SHOP          ----------                 '
-00003C76= 0D 0A                   1195                          DC.B    $0D,$0A
-00003C78= 20 20 20 20 20 20 ...   1196                          DC.B    '                                                 '
-00003CA9= 0D 0A                   1197                          DC.B    $0D,$0A
-00003CAB= 20 20 20 2D 20 48 ...   1198                          DC.B    '   - Here you can find the goods to ease the battle  '
-00003CE0= 0D 0A                   1199                          DC.B    $0D,$0A
-00003CE2= 20 77 69 74 68 20 ...   1200                          DC.B    ' with the Amanto and the Carbon emission in the front.   '
-00003D1B= 0D 0A                   1201                          DC.B    $0D,$0A
-00003D1D= 20 20 20 20 20 2D ...   1202                          DC.B    '     - Take your time and spend your gold coins  '
-00003D4E= 0D 0A                   1203                          DC.B    $0D,$0A
-00003D50= 20 20 20 20 20 20 ...   1204                          DC.B    '                       wisely..                             '
-00003D8C= 0D 0A                   1205                          DC.B    $0D,$0A
-00003D8E= 20 20 20 20 20 20 ...   1206                          DC.B    '                                                 '
-00003DBF= 0D 0A                   1207                          DC.B    $0D,$0A
-00003DC1= 20 20 20 20 20 20 ...   1208                          DC.B    '           '
-00003DCC= 0D 0A                   1209                          DC.B    $0D,$0A
-00003DCE= 20 20 20 20 20 20 ...   1210                          DC.B    '           '
-00003DD9= 0D 0A                   1211                          DC.B    $0D,$0A
-00003DDB= 20 20 20 20 20 20 ...   1212                          DC.B    '           ',0
-00003DE7= 2D 2D 2D 2D 2D 2D ...   1213  LORE1_MSG:              DC.B    '---------------------------------------.----------------------------------------'
-00003E37= 0D 0A                   1214                          DC.B    $0D,$0A
-00003E39= 20 20 20 20 20 20 ...   1215                          DC.B    '                   -------I--  Three swords style  --I-------'
-00003E76= 0D 0A                   1216                          DC.B    $0D,$0A
-00003E78= 20 20 20 20 20 20 ...   1217                          DC.B    '                                       |'
-00003EA0= 0D 0A                   1218                          DC.B    $0D,$0A
-00003EA2= 20 20 20 20 20 20 ...   1219                          DC.B    '                                      -T-'
-00003ECB= 0D 0A                   1220                          DC.B    $0D,$0A
-00003ECD= 20 20 20 20 20 20 ...   1221                          DC.B    '                                       |'
-00003EF5= 0D 0A                   1222                          DC.B    $0D,$0A
-00003EF7= 20 20 20 20 20 20 ...   1223                          DC.B    '                                       |'
-00003F1F= 0D 0A                   1224                          DC.B    $0D,$0A
-00003F21= 20 20 20 20 20 20 ...   1225                          DC.B    '                                       |'
-00003F49= 0D 0A                   1226                          DC.B    $0D,$0A
-00003F4B=                         1227                          DC.B    ''
-00003F4B= 0D 0A                   1228                          DC.B    $0D,$0A
-00003F4D=                         1229                          DC.B    ''
-00003F4D= 0D 0A                   1230                          DC.B    $0D,$0A
-00003F4F=                         1231                          DC.B    ''
-00003F4F= 0D 0A                   1232                          DC.B    $0D,$0A
-00003F51=                         1233                          DC.B    ''
-00003F51= 0D 0A                   1234                          DC.B    $0D,$0A
-00003F53=                         1235                          DC.B    ''
-00003F53= 0D 0A                   1236                          DC.B    $0D,$0A
-00003F55=                         1237                          DC.B    ''
-00003F55= 0D 0A                   1238                          DC.B    $0D,$0A
-00003F57=                         1239                          DC.B    ''
-00003F57= 0D 0A                   1240                          DC.B    $0D,$0A
-00003F59= 20 20 20 20 20 20 ...   1241                          DC.B    '       - Legendary swordsman style, required immense strength and skill'
-00003FA0= 0D 0A                   1242                          DC.B    $0D,$0A
-00003FA2= 20 20 20 20 20 20 ...   1243                          DC.B    '              to utilize three swords at once - two in the palms,'
-00003FE3= 0D 0A                   1244                          DC.B    $0D,$0A
-00003FE5= 20 20 20 20 20 20 ...   1245                          DC.B    '          one in between theeth, clenched for grip and utilization of '
-0000402B= 0D 0A                   1246                          DC.B    $0D,$0A
-0000402D= 20 20 20 20 20 20 ...   1247                          DC.B    '              immense jaw strength, following thoroughly trained'
-0000406D= 0D 0A                   1248                          DC.B    $0D,$0A
-0000406F= 20 20 20 20 20 20 ...   1249                          DC.B    '                  neck muscles to move the sword as pleased.'
-000040AB= 0D 0A                   1250                          DC.B    $0D,$0A
-000040AD=                         1251                          DC.B    ''
-000040AD= 0D 0A                   1252                          DC.B    $0D,$0A
-000040AF=                         1253                          DC.B    ''
-000040AF= 0D 0A                   1254                          DC.B    $0D,$0A
-000040B1=                         1255                          DC.B    ''
-000040B1= 0D 0A                   1256                          DC.B    $0D,$0A
-000040B3=                         1257                          DC.B    ''
-000040B3= 0D 0A                   1258                          DC.B    $0D,$0A
-000040B5=                         1259                          DC.B    ''
-000040B5= 0D 0A                   1260                          DC.B    $0D,$0A
-000040B7=                         1261                          DC.B    ''
-000040B7= 0D 0A                   1262                          DC.B    $0D,$0A
-000040B9=                         1263                          DC.B    ''
-000040B9= 0D 0A                   1264                          DC.B    $0D,$0A
-000040BB=                         1265                          DC.B    ''
-000040BB= 0D 0A                   1266                          DC.B    $0D,$0A
-000040BD=                         1267                          DC.B    ''
-000040BD= 0D 0A                   1268                          DC.B    $0D,$0A
-000040BF=                         1269                          DC.B    ''
-000040BF= 0D 0A                   1270                          DC.B    $0D,$0A
-000040C1=                         1271                          DC.B    ''
-000040C1= 0D 0A                   1272                          DC.B    $0D,$0A
-000040C3= 2D 2D 2D 2D 2D 2D ...   1273                          DC.B    '---------------------------------------.----------------------------------------'
-00004113= 0D 0A                   1274                          DC.B    $0D,$0A
-00004115= 3C 45 4E 54 45 52 ...   1275                          DC.B    '<ENTER> To continue..',0
-0000412B= 2D 2D 2D 2D 2D 2D ...   1276  LORE2_MSG:              DC.B    '---------------------------------------.----------------------------------------'
-0000417B= 0D 0A                   1277                          DC.B    $0D,$0A
-0000417D= 20 20 20 20 20 20 ...   1278                          DC.B    '                    -------I--  Two swords style  --I-------                    '
-000041CD= 0D 0A                   1279                          DC.B    $0D,$0A
-000041CF=                         1280                          DC.B    ''
-000041CF= 0D 0A                   1281                          DC.B    $0D,$0A
-000041D1=                         1282                          DC.B    ''
-000041D1= 0D 0A                   1283                          DC.B    $0D,$0A
-000041D3=                         1284                          DC.B    ''
-000041D3= 0D 0A                   1285                          DC.B    $0D,$0A
-000041D5=                         1286                          DC.B    ''
-000041D5= 0D 0A                   1287                          DC.B    $0D,$0A
-000041D7=                         1288                          DC.B    ''
-000041D7= 0D 0A                   1289                          DC.B    $0D,$0A
-000041D9= 20 20 20 20 20 20 ...   1290                          DC.B    '           '
-000041E4= 0D 0A                   1291                          DC.B    $0D,$0A
-000041E6= 20 20 20 20 20 20 ...   1292                          DC.B    '           '
-000041F1= 0D 0A                   1293                          DC.B    $0D,$0A
-000041F3= 20 20 20 20 20 20 ...   1294                          DC.B    '           '
-000041FE= 0D 0A                   1295                          DC.B    $0D,$0A
-00004200= 20 20 20 20 20 20 ...   1296                          DC.B    '           '
-0000420B= 0D 0A                   1297                          DC.B    $0D,$0A
-0000420D= 20 20 20 20 20 20 ...   1298                          DC.B    '           '
-00004218= 0D 0A                   1299                          DC.B    $0D,$0A
-0000421A= 20 20 20 20 20 20 ...   1300                          DC.B    '           '
-00004225= 0D 0A                   1301                          DC.B    $0D,$0A
-00004227= 20 20 20 20 20 20 ...   1302                          DC.B    '           '
-00004232= 0D 0A                   1303                          DC.B    $0D,$0A
-00004234= 20 20 20 20 20 20 ...   1304                          DC.B    '           - Not so widely utilized swordsman style, also as recalled '
-0000427A= 0D 0A                   1305                          DC.B    $0D,$0A
-0000427C= 20 20 20 20 20 20 ...   1306                          DC.B    '                 as dual wielding, use of two unsheathed swords'
-000042BB= 0D 0A                   1307                          DC.B    $0D,$0A
-000042BD= 20 20 20 20 20 20 ...   1308                          DC.B    '           at the same time to balance out offensive along the defensive. '
-00004307= 0D 0A                   1309                          DC.B    $0D,$0A
-00004309= 20 20 20 20 20 20 ...   1310                          DC.B    '                 Perfect combination to battle shielded opponents'
-0000434A= 0D 0A                   1311                          DC.B    $0D,$0A
-0000434C= 20 20 20 20 20 20 ...   1312                          DC.B    '           to place them out of balance by a strike and finish them off'
-00004393= 0D 0A                   1313                          DC.B    $0D,$0A
-00004395= 20 20 20 20 20 20 ...   1314                          DC.B    '                             with the second slash.'
-000043C8= 0D 0A                   1315                          DC.B    $0D,$0A
-000043CA= 20 20 20 20 20 20 ...   1316                          DC.B    '           '
-000043D5= 0D 0A                   1317                          DC.B    $0D,$0A
-000043D7= 20 20 20 20 20 20 ...   1318                          DC.B    '           '
-000043E2= 0D 0A                   1319                          DC.B    $0D,$0A
-000043E4= 20 20 20 20 20 20 ...   1320                          DC.B    '           '
-000043EF= 0D 0A                   1321                          DC.B    $0D,$0A
-000043F1= 20 20 20 20 20 20 ...   1322                          DC.B    '           '
-000043FC= 0D 0A                   1323                          DC.B    $0D,$0A
-000043FE= 20 20 20 20 20 20 ...   1324                          DC.B    '           '
-00004409= 0D 0A                   1325                          DC.B    $0D,$0A
-0000440B= 20 20 20 20 20 20 ...   1326                          DC.B    '           '
-00004416= 0D 0A                   1327                          DC.B    $0D,$0A
-00004418= 20 20 20 20 20 20 ...   1328                          DC.B    '           '
-00004423= 0D 0A                   1329                          DC.B    $0D,$0A
-00004425= 20 20 20 20 20 20 ...   1330                          DC.B    '           '
-00004430= 0D 0A                   1331                          DC.B    $0D,$0A
-00004432= 20 20 20 20 20 20 ...   1332                          DC.B    '           '
-0000443D= 0D 0A                   1333                          DC.B    $0D,$0A
-0000443F= 20 20 20                1334                          DC.B    '   '
-00004442= 0D 0A                   1335                          DC.B    $0D,$0A
-00004444= 2D 2D 2D 2D 2D 2D ...   1336                          DC.B    '---------------------------------------.----------------------------------------'
-00004494= 0D 0A                   1337                          DC.B    $0D,$0A
-00004496= 3C 45 4E 54 45 52 ...   1338                          DC.B    '<ENTER> To continue..',0
-000044AC                          1339                          
-000044AC= 2D 2D 2D 2D 2D 2D ...   1340  LORE3_MSG:              DC.B    '---------------------------------------.----------------------------------------'
-000044FC= 0D 0A                   1341                          DC.B    $0D,$0A
-000044FE= 20 20 20 20 20 20 ...   1342                          DC.B    '                                One sword style'
-0000452D= 0D 0A                   1343                          DC.B    $0D,$0A
-0000452F= 20 20 20 20 20 20 ...   1344                          DC.B    '                                       |                      '
-0000456D= 0D 0A                   1345                          DC.B    $0D,$0A
-0000456F= 20 20 20 20 20 20 ...   1346                          DC.B    '                                      -T-  '
-0000459A= 0D 0A                   1347                          DC.B    $0D,$0A
-0000459C= 20 20 20 20 20 20 ...   1348                          DC.B    '                                       |'
-000045C4= 0D 0A                   1349                          DC.B    $0D,$0A
-000045C6= 20 20 20 20 20 20 ...   1350                          DC.B    '                                       |'
-000045EE= 0D 0A                   1351                          DC.B    $0D,$0A
-000045F0= 20 20 20 20 20 20 ...   1352                          DC.B    '                                       |'
-00004618= 0D 0A                   1353                          DC.B    $0D,$0A
-0000461A= 20 20 20 20 20 20 ...   1354                          DC.B    '           '
-00004625= 0D 0A                   1355                          DC.B    $0D,$0A
-00004627= 20 20 20 20 20 20 ...   1356                          DC.B    '           '
-00004632= 0D 0A                   1357                          DC.B    $0D,$0A
-00004634= 20 20 20 20 20 20 ...   1358                          DC.B    '           '
-0000463F= 0D 0A                   1359                          DC.B    $0D,$0A
-00004641= 20 20 20 20 20 20 ...   1360                          DC.B    '           '
-0000464C= 0D 0A                   1361                          DC.B    $0D,$0A
-0000464E= 20 20 20 20 20 20 ...   1362                          DC.B    '           '
-00004659= 0D 0A                   1363                          DC.B    $0D,$0A
-0000465B= 20 20 20 20 20 20 ...   1364                          DC.B    '           '
-00004666= 0D 0A                   1365                          DC.B    $0D,$0A
-00004668= 20 20 20 20 20 20 ...   1366                          DC.B    '           '
-00004673= 0D 0A                   1367                          DC.B    $0D,$0A
-00004675= 20 20 20 20 20 20 ...   1368                          DC.B    '       - Legendary swordsman style, required immense strength and skill        '
-000046C4= 0D 0A                   1369                          DC.B    $0D,$0A
-000046C6= 20 20 20 20 20 20 ...   1370                          DC.B    '              to utilize three swords at once - two in the palms,'
-00004707= 0D 0A                   1371                          DC.B    $0D,$0A
-00004709= 20 20 20 20 20 20 ...   1372                          DC.B    '          one in between theeth, clenched for grip and utilization of '
-0000474F= 0D 0A                   1373                          DC.B    $0D,$0A
-00004751= 20 20 20 20 20 20 ...   1374                          DC.B    '              immense jaw strength, following thoroughly trained'
-00004791= 0D 0A                   1375                          DC.B    $0D,$0A
-00004793= 20 20 20 20 20 20 ...   1376                          DC.B    '                  neck muscles to move the sword as pleased.'
-000047CF= 0D 0A                   1377                          DC.B    $0D,$0A
-000047D1= 20 20 20 20 20 20 ...   1378                          DC.B    '           '
-000047DC= 0D 0A                   1379                          DC.B    $0D,$0A
-000047DE= 20 20 20 20 20 20 ...   1380                          DC.B    '           '
-000047E9= 0D 0A                   1381                          DC.B    $0D,$0A
-000047EB= 20 20 20 20 20 20 ...   1382                          DC.B    '           '
-000047F6= 0D 0A                   1383                          DC.B    $0D,$0A
-000047F8= 20 20 20 20 20 20 ...   1384                          DC.B    '           '
-00004803= 0D 0A                   1385                          DC.B    $0D,$0A
-00004805= 20 20 20 20 20 20 ...   1386                          DC.B    '           '
-00004810= 0D 0A                   1387                          DC.B    $0D,$0A
-00004812= 20 20 20 20 20 20 ...   1388                          DC.B    '           '
-0000481D= 0D 0A                   1389                          DC.B    $0D,$0A
-0000481F= 20 20 20 20 20 20 ...   1390                          DC.B    '           '
-0000482A= 0D 0A                   1391                          DC.B    $0D,$0A
-0000482C= 20 20 20 20 20 20 ...   1392                          DC.B    '           '
-00004837= 0D 0A                   1393                          DC.B    $0D,$0A
-00004839= 20 20 20 20 20 20 ...   1394                          DC.B    '           '
-00004844= 0D 0A                   1395                          DC.B    $0D,$0A
-00004846= 20 20 20 20 20 20 ...   1396                          DC.B    '           '
-00004851= 0D 0A                   1397                          DC.B    $0D,$0A
-00004853= 20 20 20                1398                          DC.B    '   '
-00004856= 0D 0A                   1399                          DC.B    $0D,$0A
-00004858= 2D 2D 2D 2D 2D 2D ...   1400                          DC.B    '---------------------------------------.----------------------------------------'
-000048A8= 0D 0A                   1401                          DC.B    $0D,$0A
-000048AA= 3C 45 4E 54 45 52 ...   1402                          DC.B    '<ENTER> To continue..',0
-000048C0= 2D 2D 2D 2D 2D 2D ...   1403  RECONSIDER_MSG:         DC.B    '---------------------------------------.----------------------------------------'
-00004910= 0D 0A                   1404                          DC.B    $0D,$0A
-00004912=                         1405                          DC.B    ''
-00004912= 0D 0A                   1406                          DC.B    $0D,$0A
-00004914=                         1407                          DC.B    ''
-00004914= 0D 0A                   1408                          DC.B    $0D,$0A
-00004916=                         1409                          DC.B    ''
-00004916= 0D 0A                   1410                          DC.B    $0D,$0A
-00004918=                         1411                          DC.B    ''
-00004918= 0D 0A                   1412                          DC.B    $0D,$0A
-0000491A=                         1413                          DC.B    ''
-0000491A= 0D 0A                   1414                          DC.B    $0D,$0A
-0000491C=                         1415                          DC.B    ''
-0000491C= 0D 0A                   1416                          DC.B    $0D,$0A
-0000491E=                         1417                          DC.B    ''
-0000491E= 0D 0A                   1418                          DC.B    $0D,$0A
-00004920=                         1419                          DC.B    ''
-00004920= 0D 0A                   1420                          DC.B    $0D,$0A
-00004922=                         1421                          DC.B    ''
-00004922= 0D 0A                   1422                          DC.B    $0D,$0A
-00004924=                         1423                          DC.B    ''
-00004924= 0D 0A                   1424                          DC.B    $0D,$0A
-00004926=                         1425                          DC.B    ''
-00004926= 0D 0A                   1426                          DC.B    $0D,$0A
-00004928=                         1427                          DC.B    ''
-00004928= 0D 0A                   1428                          DC.B    $0D,$0A
-0000492A=                         1429                          DC.B    ''
-0000492A= 0D 0A                   1430                          DC.B    $0D,$0A
-0000492C= 20 2D 2D 2D 2D 2D ...   1431                          DC.B    ' --------------------- Do you wish to lock in this style? ---------------------'
-0000497B= 0D 0A                   1432                          DC.B    $0D,$0A
-0000497D= 20 2D 2D 2D 2D 2D ...   1433                          DC.B    ' ------------ Input: 1 to confirm ----------- Input: 0 to cancel -------------'
-000049CB= 0D 0A                   1434                          DC.B    $0D,$0A
-000049CD=                         1435                          DC.B    ''
-000049CD= 0D 0A                   1436                          DC.B    $0D,$0A
-000049CF=                         1437                          DC.B    ''
-000049CF= 0D 0A                   1438                          DC.B    $0D,$0A
-000049D1=                         1439                          DC.B    ''
-000049D1= 0D 0A                   1440                          DC.B    $0D,$0A
-000049D3=                         1441                          DC.B    ''
-000049D3= 0D 0A                   1442                          DC.B    $0D,$0A
-000049D5=                         1443                          DC.B    ''
-000049D5= 0D 0A                   1444                          DC.B    $0D,$0A
-000049D7=                         1445                          DC.B    ''
-000049D7= 0D 0A                   1446                          DC.B    $0D,$0A
-000049D9=                         1447                          DC.B    ''
-000049D9= 0D 0A                   1448                          DC.B    $0D,$0A
-000049DB=                         1449                          DC.B    ''
-000049DB= 0D 0A                   1450                          DC.B    $0D,$0A
-000049DD=                         1451                          DC.B    ''
-000049DD= 0D 0A                   1452                          DC.B    $0D,$0A
-000049DF=                         1453                          DC.B    ''
-000049DF= 0D 0A                   1454                          DC.B    $0D,$0A
-000049E1=                         1455                          DC.B    ''
-000049E1= 0D 0A                   1456                          DC.B    $0D,$0A
-000049E3=                         1457                          DC.B    ''
-000049E3= 0D 0A                   1458                          DC.B    $0D,$0A
-000049E5=                         1459                          DC.B    ''
-000049E5= 0D 0A                   1460                          DC.B    $0D,$0A
-000049E7=                         1461                          DC.B    ''
-000049E7= 0D 0A                   1462                          DC.B    $0D,$0A
-000049E9=                         1463                          DC.B    ''
-000049E9= 0D 0A                   1464                          DC.B    $0D,$0A
-000049EB= 2D 2D 2D 2D 2D 2D ...   1465                          DC.B    '---------------------------------------.----------------------------------------',0                 
-00004A3C= 2D 2D 2D 2D 2D 2D ...   1466  PAGE_SIZE:              DC.B    '---------------------------------------.----------------------------------------'
-00004A8C= 0D 0A                   1467                          DC.B    $0D,$0A
-00004A8E=                         1468                          DC.B    ''
-00004A8E= 0D 0A                   1469                          DC.B    $0D,$0A
-00004A90=                         1470                          DC.B    ''
-00004A90= 0D 0A                   1471                          DC.B    $0D,$0A
-00004A92=                         1472                          DC.B    ''
-00004A92= 0D 0A                   1473                          DC.B    $0D,$0A
-00004A94=                         1474                          DC.B    ''
-00004A94= 0D 0A                   1475                          DC.B    $0D,$0A
-00004A96=                         1476                          DC.B    ''
-00004A96= 0D 0A                   1477                          DC.B    $0D,$0A
-00004A98=                         1478                          DC.B    ''
-00004A98= 0D 0A                   1479                          DC.B    $0D,$0A
-00004A9A=                         1480                          DC.B    ''
-00004A9A= 0D 0A                   1481                          DC.B    $0D,$0A
-00004A9C=                         1482                          DC.B    ''
-00004A9C= 0D 0A                   1483                          DC.B    $0D,$0A
-00004A9E=                         1484                          DC.B    ''
-00004A9E= 0D 0A                   1485                          DC.B    $0D,$0A
-00004AA0=                         1486                          DC.B    ''
-00004AA0= 0D 0A                   1487                          DC.B    $0D,$0A
-00004AA2=                         1488                          DC.B    ''
-00004AA2= 0D 0A                   1489                          DC.B    $0D,$0A
-00004AA4=                         1490                          DC.B    ''
-00004AA4= 0D 0A                   1491                          DC.B    $0D,$0A
-00004AA6=                         1492                          DC.B    ''
-00004AA6= 0D 0A                   1493                          DC.B    $0D,$0A
-00004AA8=                         1494                          DC.B    ''
-00004AA8= 0D 0A                   1495                          DC.B    $0D,$0A
-00004AAA= 2D 20 20 20 20 20 ...   1496                          DC.B    '-                                     mid                                      -'
-00004AFA= 0D 0A                   1497                          DC.B    $0D,$0A
-00004AFC=                         1498                          DC.B    ''
-00004AFC= 0D 0A                   1499                          DC.B    $0D,$0A
-00004AFE=                         1500                          DC.B    ''
-00004AFE= 0D 0A                   1501                          DC.B    $0D,$0A
-00004B00=                         1502                          DC.B    ''
-00004B00= 0D 0A                   1503                          DC.B    $0D,$0A
-00004B02=                         1504                          DC.B    ''
-00004B02= 0D 0A                   1505                          DC.B    $0D,$0A
-00004B04=                         1506                          DC.B    ''
-00004B04= 0D 0A                   1507                          DC.B    $0D,$0A
-00004B06=                         1508                          DC.B    ''
-00004B06= 0D 0A                   1509                          DC.B    $0D,$0A
-00004B08=                         1510                          DC.B    ''
-00004B08= 0D 0A                   1511                          DC.B    $0D,$0A
-00004B0A=                         1512                          DC.B    ''
-00004B0A= 0D 0A                   1513                          DC.B    $0D,$0A
-00004B0C=                         1514                          DC.B    ''
-00004B0C= 0D 0A                   1515                          DC.B    $0D,$0A
-00004B0E=                         1516                          DC.B    ''
-00004B0E= 0D 0A                   1517                          DC.B    $0D,$0A
-00004B10=                         1518                          DC.B    ''
-00004B10= 0D 0A                   1519                          DC.B    $0D,$0A
-00004B12=                         1520                          DC.B    ''
-00004B12= 0D 0A                   1521                          DC.B    $0D,$0A
-00004B14=                         1522                          DC.B    ''
-00004B14= 0D 0A                   1523                          DC.B    $0D,$0A
-00004B16=                         1524                          DC.B    ''
-00004B16= 0D 0A                   1525                          DC.B    $0D,$0A
-00004B18=                         1526                          DC.B    ''
-00004B18= 0D 0A                   1527                          DC.B    $0D,$0A
-00004B1A= 2D 2D 2D 2D 2D 2D ...   1528                          DC.B    '---------------------------------------.----------------------------------------',0
-00004B6B                          1529  
-00004B6B                          1530  
-00004B6B                          1531                         
-00004B6B                          1532      END START
+00002844  4243                     837      CLR     D3
+00002846  43F8 4800                838      LEA     $4800,A1
+0000284A  41F8 4500                839      LEA     $4500,A0
+0000284E  1211                     840      MOVE.B  (A1),D1
+00002850  1410                     841      MOVE.B  (A0),D2
+00002852  5201                     842      ADD.B   #1,D1
+00002854  5202                     843      ADD.B   #1,D2
+00002856  11C1 4800                844      MOVE.B  D1,$4800
+0000285A  11C2 4500                845      MOVE.B  D2,$4500
+0000285E  43F8 4800                846      LEA     $4800,A1
+00002862  41F8 4500                847      LEA     $4500,A0
+00002866                           848                              *MONEY DEDUCT
+00002866  43F9 00008000            849      LEA     $8000,A1
+0000286C  3611                     850      MOVE.W  (A1),D3
+0000286E  0443 03E8                851      SUB.W   #1000,D3
+00002872  33C3 00008000            852      MOVE.W  D3,$8000
+00002878  43F9 00008000            853      LEA     $8000,A1
+0000287E                           854      
+0000287E  4EF8 27C8                855      JMP     SHOP_ENTER
+00002882                           856  NOT_ENOUGH_MONEY:
+00002882  6100 01B6                857      BSR     ENDL
+00002886  6100 01B2                858      BSR     ENDL
+0000288A  43F9 000038D4            859      LEA     NO_MONEY_MSG,A1
+00002890  103C 000E                860      MOVE.B  #14,D0
+00002894  4E4F                     861      TRAP    #15
+00002896  6100 0056                862      BSR     HALT
+0000289A  4EF8 27C8                863      JMP     SHOP_ENTER
+0000289E                           864            
+0000289E                           865      
+0000289E                           866  *-------------------------------------------------------
+0000289E                           867  *-----------------HEADS UP DISPLAY (SCORE)--------------
+0000289E                           868  * RETRIEVES THE SCORE FROM MEMORY LOCATION
+0000289E                           869  *-------------------------------------------------------   
+0000289E                           870  HUD:
+0000289E                           871  
+0000289E  6100 019A                872      BSR     ENDL
+000028A2  6100 001E                873      BSR     DECORATE
+000028A6  4241                     874      CLR     D1
+000028A8  6100 0018                875      BSR     DECORATE
+000028AC  4E75                     876      RTS
+000028AE                           877  
+000028AE                           878  *-------------------------------------------------------
+000028AE                           879  *--------------------------LOOP-------------------------
+000028AE                           880  *   -------------------------------------------------------
+000028AE                           881  LOOP:
+000028AE  163C 0005                882      MOVE.B  #5, D3 LOOP COUNTER D3=5
+000028B2                           883  NEXT:
+000028B2  43F9 000033B3            884      LEA     LOOP_MSG,A1
+000028B8  103C 000E                885      MOVE.B  #14,D0
+000028BC  4E4F                     886      TRAP    #15
+000028BE  5343                     887      SUB     #1,D3   DECREMENT LOOP COUNTER
+000028C0  66F0                     888      BNE     NEXT    REPEAT UNTIL D0=0
+000028C2                           889  
+000028C2                           890  *-------------------------------------------------------
+000028C2                           891  *------------------SCREEN DECORATION--------------------
+000028C2                           892  *-------------------------------------------------------
+000028C2                           893  DECORATE:
+000028C2  4243                     894      CLR     D3
+000028C4  163C 003C                895      MOVE.B  #60, D3
+000028C8  6100 0170                896      BSR     ENDL
+000028CC                           897  OUT:
+000028CC  43F9 000033B3            898      LEA     LOOP_MSG,A1
+000028D2  103C 000E                899      MOVE.B  #14,D0
+000028D6  4E4F                     900      TRAP    #15
+000028D8  5343                     901      SUB     #1,D3   DECREMENT LOOP COUNTER
+000028DA  66F0                     902      BNE     OUT     REPEAT UNTIL D0=0
+000028DC  6100 015C                903      BSR     ENDL
+000028E0  4E75                     904      RTS
+000028E2                           905      
+000028E2                           906  CLEAR_SCREEN: 
+000028E2  103C 000B                907      MOVE.B  #11,D0      CLEAR SCREEN
+000028E6  323C FF00                908      MOVE.W  #$FF00,D1
+000028EA  4E4F                     909      TRAP    #15
+000028EC  4E75                     910      RTS
+000028EE                           911  HALT:
+000028EE  103C 0004                912      MOVE.B  #4,D0
+000028F2  4E4F                     913      TRAP    #15
+000028F4  4E75                     914      RTS
+000028F6                           915  ASK_PLAY:
+000028F6  6100 0142                916      BSR     ENDL
+000028FA  61C6                     917      BSR     DECORATE
+000028FC  6100 013C                918      BSR     ENDL
+00002900  43F9 0000391E            919      LEA     ASK_MSG,A1
+00002906  103C 000E                920      MOVE.B  #14,D0
+0000290A  4E4F                     921      TRAP    #15
+0000290C  6100 012C                922      BSR     ENDL
+00002910  61B0                     923      BSR     DECORATE
+00002912  61DA                     924      BSR     HALT
+00002914  B27C 0000                925      CMP     #EXIT,D1
+00002918  6700 F6EC                926      BEQ     END
+0000291C  4E75                     927      RTS
+0000291E                           928  LORE:
+0000291E  4241                     929      CLR     D1
+00002920  1238 4100                930      MOVE.B  $4100,D1
+00002924  B27C 0002                931      CMP     #2,D1       IS D1 == 2?
+00002928  6700 0036                932      BEQ     LORE_2      
+0000292C                           933      
+0000292C  B27C 0002                934      CMP     #2,D1       IS D1 < 2?
+00002930  6D00 000A                935      BLT     LORE_1
+00002934                           936      
+00002934  B27C 0002                937      CMP     #2,D1       IS D1 > 2?
+00002938  6E00 0052                938      BGT     LORE_3
+0000293C                           939  LORE_1:
+0000293C  61A4                     940      BSR     CLEAR_SCREEN
+0000293E  6182                     941      BSR     DECORATE
+00002940  61A0                     942      BSR     CLEAR_SCREEN
+00002942  6100 FF7E                943      BSR     DECORATE
+00002946  619A                     944      BSR     CLEAR_SCREEN
+00002948  6100 00F0                945      BSR     ENDL
+0000294C  43F9 00003E01            946      LEA     LORE1_MSG,A1
+00002952  103C 000E                947      MOVE.B  #14,D0
+00002956  4E4F                     948      TRAP    #15
+00002958  6194                     949      BSR     HALT
+0000295A  6100 005E                950      BSR     CONFIRM_STYLE
+0000295E  4E75                     951      RTS
+00002960                           952  
+00002960                           953  LORE_2:
+00002960  6180                     954      BSR     CLEAR_SCREEN
+00002962  6100 FF5E                955      BSR     DECORATE
+00002966  6100 FF7A                956      BSR     CLEAR_SCREEN
+0000296A  6100 FF56                957      BSR     DECORATE
+0000296E  6100 FF72                958      BSR     CLEAR_SCREEN
+00002972  6100 00C6                959      BSR     ENDL
+00002976  43F9 00004145            960      LEA     LORE2_MSG,A1
+0000297C  103C 000E                961      MOVE.B  #14,D0
+00002980  4E4F                     962      TRAP    #15
+00002982  6100 FF6A                963      BSR     HALT
+00002986  6100 0032                964      BSR     CONFIRM_STYLE
+0000298A  4E75                     965      RTS
+0000298C                           966  
+0000298C                           967  LORE_3:
+0000298C  6100 FF54                968      BSR     CLEAR_SCREEN
+00002990  6100 FF30                969      BSR     DECORATE
+00002994  6100 FF4C                970      BSR     CLEAR_SCREEN
+00002998  6100 FF28                971      BSR     DECORATE
+0000299C  6100 FF44                972      BSR     CLEAR_SCREEN
+000029A0  6100 0098                973      BSR     ENDL
+000029A4  43F9 000044C6            974      LEA     LORE3_MSG,A1
+000029AA  103C 000E                975      MOVE.B  #14,D0
+000029AE  4E4F                     976      TRAP    #15
+000029B0  6100 FF3C                977      BSR     HALT
+000029B4  6100 0004                978      BSR     CONFIRM_STYLE
+000029B8  4E75                     979      RTS
+000029BA                           980  CONFIRM_STYLE:
+000029BA  6100 FF26                981      BSR     CLEAR_SCREEN
+000029BE  6100 FF02                982      BSR     DECORATE
+000029C2  6100 FF1E                983      BSR     CLEAR_SCREEN
+000029C6  6100 FEFA                984      BSR     DECORATE
+000029CA  6100 FF16                985      BSR     CLEAR_SCREEN
+000029CE  43F9 000048DA            986      LEA     RECONSIDER_MSG,A1
+000029D4  103C 000E                987      MOVE.B  #14,D0
+000029D8  4E4F                     988      TRAP    #15
+000029DA  103C 0004                989      MOVE.B  #4,D0
+000029DE  4E4F                     990      TRAP    #15
+000029E0                           991      
+000029E0  B27C 0001                992      CMP     #1,D1
+000029E4  6700 F68A                993      BEQ     STATS
+000029E8                           994      
+000029E8  B27C 0000                995      CMP     #0,D1
+000029EC  6700 F666                996      BEQ     INPUT
+000029F0                           997  *-------------------------------------------------------
+000029F0                           998  *------------------------REPLAY-------------------------
+000029F0                           999  *-------------------------------------------------------
+000029F0                          1000  REPLAY:
+000029F0  6100 FEF0               1001      BSR     CLEAR_SCREEN
+000029F4  6100 0044               1002      BSR     ENDL
+000029F8  43F9 000033B5           1003      LEA     REPLAY_MSG,A1
+000029FE  103C 000E               1004      MOVE.B  #14,D0
+00002A02  4E4F                    1005      TRAP    #15
+00002A04  6100 0034               1006      BSR     ENDL
+00002A08                          1007      
+00002A08  103C 0004               1008      MOVE.B  #4,D0
+00002A0C  4E4F                    1009      TRAP    #15
+00002A0E                          1010      
+00002A0E  B27C 0000               1011      CMP     #EXIT,D1
+00002A12  6700 F5F2               1012      BEQ     END
+00002A16                          1013      
+00002A16  B27C 0001               1014      CMP     #STATISTICS,D1
+00002A1A  6700 F654               1015      BEQ     STATS
+00002A1E                          1016      
+00002A1E  B27C 0002               1017      CMP     #SHOP,D1
+00002A22  6700 FDA4               1018      BEQ     SHOP_ENTER
+00002A26                          1019      
+00002A26  B27C 0003               1020      CMP     #ATTACK,D1
+00002A2A  6700 F9F4               1021      BEQ     ATTACK_EMISSION
+00002A2E                          1022      
+00002A2E  B27C 0004               1023      CMP     #NEXT_DAY,D1
+00002A32  6700 F626               1024      BEQ     GAMELOOP
+00002A36                          1025      
+00002A36  6100 F622               1026      BSR     GAMELOOP
+00002A3A                          1027  
+00002A3A                          1028  ENDL:
+00002A3A  48E7 8040               1029      MOVEM.L D0/A1,-(A7)
+00002A3E  303C 000E               1030      MOVE    #14,D0
+00002A42  43F9 00002A50           1031      LEA     CRLF,A1
+00002A48  4E4F                    1032      TRAP    #15
+00002A4A  4CDF 0201               1033      MOVEM.L (A7)+,D0/A1
+00002A4E  4E75                    1034      RTS
+00002A50                          1035      
+00002A50                          1036  *-------------------------------------------------------
+00002A50                          1037  *-------------------DATA DELARATIONS--------------------
+00002A50                          1038  *-------------------------------------------------------
+00002A50                          1039  
+00002A50= 0D 0A 00                1040  CRLF:           DC.B    $0D,$0A,0
+00002A53= 2D 2D 2D 2D 2D 2D ...   1041  WELCOME_MSG:    DC.B    '---------------------------------------.----------------------------------------'
+00002AA3= 0D 0A                   1042                  DC.B    $0D,$0A
+00002AA5= 0D 0A                   1043                  DC.B    $0D,$0A
+00002AA7=                         1044                  DC.B    ''
+00002AA7= 20 20 20 20 20 20 ...   1045                  DC.B    '                                Wan(o) (e)mission '
+00002AD9= 0D 0A                   1046                  DC.B    $0D,$0A
+00002ADB= 0D 0A                   1047                  DC.B    $0D,$0A
+00002ADD=                         1048                  DC.B    ''
+00002ADD= 2D 2D 2D 2D 2D 2D ...   1049                  DC.B    '---------------------------------------.----------------------------------------'
+00002B2D= 0D 0A                   1050                  DC.B    $0D,$0A
+00002B2F=                         1051                  DC.B    ''
+00002B2F= 0D 0A                   1052                  DC.B    $0D,$0A
+00002B31=                         1053                  DC.B    ''
+00002B31= 0D 0A                   1054                  DC.B    $0D,$0A
+00002B33= 20 20 20 20 20 20 ...   1055                  DC.B    '                           PRESS <ENTER> TO START',0
+00002B65= 2D 2D 2D 2D 2D 2D ...   1056  STARTING_INFO:  DC.B    '---------------------------------------.----------------------------------------'
+00002BB5= 0D 0A                   1057                  DC.B    $0D,$0A
+00002BB7= 20 20 20 20 20 20 ...   1058                  DC.B    '               - Welcome swordsman-gozaru,'
+00002BE1= 0D 0A                   1059                  DC.B    $0D,$0A
+00002BE3=                         1060                  DC.B    ''
+00002BE3= 0D 0A                   1061                  DC.B    $0D,$0A
+00002BE5= 20 20 20 20 20 74 ...   1062                  DC.B    '     the Wano kingdom has been attacked by the Amanto, extraterrestrial'
+00002C2C= 0D 0A                   1063                  DC.B    $0D,$0A
+00002C2E=                         1064                  DC.B    ''
+00002C2E= 0D 0A                   1065                  DC.B    $0D,$0A
+00002C30= 20 20 20 20 20 62 ...   1066                  DC.B    '     beings from space, that are a threat, not even to the Wano kingdom,  '
+00002C7A= 0D 0A                   1067                  DC.B    $0D,$0A
+00002C7C=                         1068                  DC.B    ''
+00002C7C= 0D 0A                   1069                  DC.B    $0D,$0A
+00002C7E= 20 20 20 20 20 62 ...   1070                  DC.B    '     but the world itself!'
+00002C98= 0D 0A                   1071                  DC.B    $0D,$0A
+00002C9A= 20 20 20 20 20 41 ...   1072                  DC.B    '     Amanto feeds off the oxygen of the earths atmosphere, '
+00002CD5= 0D 0A                   1073                  DC.B    $0D,$0A
+00002CD7= 20 20 20 20 20 20 ...   1074                  DC.B    '                                                 '
+00002D08= 0D 0A                   1075                  DC.B    $0D,$0A
+00002D0A= 20 20 20 20 20 6C ...   1076                  DC.B    '     leaving the air with pure Carbon Dioxide.  '
+00002D3A= 0D 0A                   1077                  DC.B    $0D,$0A
+00002D3C= 20 20 20 20 20 20 ...   1078                  DC.B    '                                                 '
+00002D6D= 0D 0A                   1079                  DC.B    $0D,$0A
+00002D6F= 2E 2D 2D 2D 2D 2D ...   1080                  DC.B    '.------------------------------------------------------------------------------.'
+00002DBF= 0D 0A                   1081                  DC.B    $0D,$0A
+00002DC1= 20 20 20 20 20 20 ...   1082                  DC.B    '                                                 '
+00002DF2= 0D 0A                   1083                  DC.B    $0D,$0A
+00002DF4= 20 20 20 20 20 20 ...   1084                  DC.B    '               - Your (E)mission is to fight the Amanto using the swordstyles'
+00002E41= 0D 0A                   1085                  DC.B    $0D,$0A
+00002E43= 20 20 20 20 20 20 ...   1086                  DC.B    '                                                   '
+00002E76= 0D 0A                   1087                  DC.B    $0D,$0A
+00002E78= 20 20 20 20 20 79 ...   1088                  DC.B    '     you have honed throughout the years,      '
+00002EA7= 0D 0A                   1089                  DC.B    $0D,$0A
+00002EA9= 20 20 20 20 20 20 ...   1090                  DC.B    '                                                   '
+00002EDC= 0D 0A                   1091                  DC.B    $0D,$0A
+00002EDE= 20 20 20 20 20 62 ...   1092                  DC.B    '     by using the mythical swords made out of Di-shards,'
+00002F16= 0D 0A                   1093                  DC.B    $0D,$0A
+00002F18= 20 20 20 20 20 20 ...   1094                  DC.B    '                                                   '
+00002F4B= 0D 0A                   1095                  DC.B    $0D,$0A
+00002F4D= 20 20 20 20 20 74 ...   1096                  DC.B    '     the mixture of Amanto brought metal and ancient shards.        '
+00002F91= 0D 0A                   1097                  DC.B    $0D,$0A
+00002F93= 20 20 20 20 20 20 ...   1098                  DC.B    '                                                   '
+00002FC6= 0D 0A                   1099                  DC.B    $0D,$0A
+00002FC8= 2E 2D 2D 2D 2D 2D ...   1100                  DC.B    '.-----------------------------------------------------------------------------.'
+00003017= 0D 0A                   1101                  DC.B    $0D,$0A
+00003019= 20 20 20 20 20 20 ...   1102                  DC.B    '                                                   '
+0000304C= 0D 0A                   1103                  DC.B    $0D,$0A
+0000304E= 20 20 20 20 20 20 ...   1104                  DC.B    '               - With the combination of combat skills and mythical swords,'
+00003099= 0D 0A                   1105                  DC.B    $0D,$0A
+0000309B= 20 20 20 20 20 20 ...   1106                  DC.B    '                                                   '
+000030CE= 0D 0A                   1107                  DC.B    $0D,$0A
+000030D0= 20 20 20 20 20 79 ...   1108                  DC.B    '     you have a chance to bring the tidings, all rests on your shoulders-gozaru.   '
+00003123= 0D 0A                   1109                  DC.B    $0D,$0A
+00003125= 20 20 20 20 20 20 ...   1110                  DC.B    '                                                   '
+00003158= 0D 0A                   1111                  DC.B    $0D,$0A
+0000315A= 20 20 20 20 20 20 ...   1112                  DC.B    '                                                 '
+0000318B= 0D 0A                   1113                  DC.B    $0D,$0A
+0000318D= 2D 2D 2D 2D 2D 2D ...   1114                  DC.B    '---------------------------------------.----------------------------------------'
+000031DD= 0D 0A                   1115                  DC.B    $0D,$0A
+000031DF= 3C 45 4E 54 45 52 ...   1116                  DC.B    '<ENTER> To continue..',0
+000031F5= 20 2D 2D 2D 2D 2D ...   1117  STYLE_TITLE:    DC.B    ' ------------------------------- STYLE SELECTOR -------------------------------',0
+00003245= 20 20 20 20 20 20 ...   1118  STYLE_MSG:      DC.B    '                           SELECT YOUR FIGHTING STYLE '
+0000327B= 0D 0A                   1119                  DC.B    $0D,$0A
+0000327D=                         1120                  DC.B    ''
+0000327D= 0D 0A                   1121                  DC.B    $0D,$0A
+0000327F=                         1122                  DC.B    ''
+0000327F= 0D 0A                   1123                  DC.B    $0D,$0A
+00003281= 20 20 20 20 20 20 ...   1124                  DC.B    '                     - 1: Three swords style(///Santoryu) -'
+000032BC= 0D 0A                   1125                  DC.B    $0D,$0A
+000032BE=                         1126                  DC.B    ''
+000032BE= 0D 0A                   1127                  DC.B    $0D,$0A
+000032C0= 20 20 20 20 20 20 ...   1128                  DC.B    '                      - 2: Two swords style(//Nitoryu) -'
+000032F8= 0D 0A                   1129                  DC.B    $0D,$0A
+000032FA=                         1130                  DC.B    ''
+000032FA= 0D 0A                   1131                  DC.B    $0D,$0A
+000032FC= 20 20 20 20 20 20 ...   1132                  DC.B    '                       - 3: One sword style(/Ittoryu) -'
+00003333= 0D 0A                   1133                  DC.B    $0D,$0A
+00003335=                         1134                  DC.B    ''
+00003335= 0D 0A                   1135                  DC.B    $0D,$0A
+00003337=                         1136                  DC.B    ''
+00003337= 0D 0A                   1137                  DC.B    $0D,$0A
+00003339= 2D 2D 2D 2D 2D 2D ...   1138                  DC.B    '---------------------------------------.----------------------------------------'
+00003389= 0D 0A                   1139                  DC.B    $0D,$0A
+0000338B= 20 20 20 20 20 20 ...   1140                  DC.B    '                                       ',0
+000033B3= 2E 00                   1141  LOOP_MSG:       DC.B    '.',0
+000033B5= 20 20 20 2D 2D 2D ...   1142  REPLAY_MSG:     DC.B    '   ----------       What do you wish to do?       ----------                                       '
+00003418= 0D 0A                   1143                  DC.B    $0D,$0A
+0000341A= 20 20 20 20 20 20 ...   1144                  DC.B    '                                                 '
+0000344B= 0D 0A                   1145                  DC.B    $0D,$0A
+0000344D= 20 20 20 20 20 20 ...   1146                  DC.B    '               *Input: 1 to display the current statistics                                                 '
+000034B8= 0D 0A                   1147                  DC.B    $0D,$0A
+000034BA= 20 20 20 20 20 20 ...   1148                  DC.B    '               *Input: 2 to open the shop menu                                                 '
+00003519= 0D 0A                   1149                  DC.B    $0D,$0A
+0000351B= 20 20 20 20 20 20 ...   1150                  DC.B    '               *Input: 3 to fight the enemies                                                 '
+00003579= 0D 0A                   1151                  DC.B    $0D,$0A
+0000357B= 20 20 20 20 20 20 ...   1152                  DC.B    '               *Input: 4 to get to the next day'
+000035AA= 0D 0A                   1153                  DC.B    $0D,$0A
+000035AC= 20 20 20 20 20 20 ...   1154                  DC.B    '               *Input: 0 to EXIT the game                                                 '
+00003606= 20 20 20 20 20 20 ...   1155                  DC.B    '                             ',0
+00003624= 20 20 20 20 20 20 ...   1156  FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
+0000364F= 20 20 20 20 20 20 ...   1157  STYLE_DAMAGE_MSG:       DC.B    '                            > - Your base damage: ',0
+00003682= 20 20 20 20 20 20 ...   1158  STAMINA_NORMAL_MSG:     DC.B    '                           > - Normal stamina use: ',0
+000036B6= 20 20 20 20 20 20 ...   1159  STAMINA_USE_MSG:        DC.B    '                          > - Ability stamina use: ',0
+000036EA= 20 20 20 20 20 20 ...   1160  ABILITY_DAMAGE_MSG:     DC.B    '                           > - Ability damage: ',0
+0000371A= 20 20 20 20 20 20 ...   1161  ABILITY_LEVEL_MSG:      DC.B    '                            > - Ability level: ',0
+0000374A= 54 68 72 65 65 20 ...   1162  FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
+0000376A= 54 77 6F 20 73 77 ...   1163  SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
+00003786= 4F 6E 65 20 73 77 ...   1164  THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
+000037A0= 20 20 20 20 20 20 ...   1165  EMISSION:               DC.B    '                              > - C.EMISSION: ',0
+000037CF= 2E 2D 2D 2D 2D 2D ...   1166  STARTER_MSG:            DC.B    '.-----------------------------------. STATS .----------------------------------.'
+0000381F= 0D 0A                   1167                          DC.B    $0D,$0A
+00003821= 00                      1168                          DC.B    '',0
+00003822= 20 20 20 20 20 20 ...   1169  ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
+00003853= 20 20 20 20 20 20 ...   1170  STAMINA_MSG:            DC.B    '                                > - STAMINA: ',0
+00003881= 20 20 20 20 20 20 ...   1171  MONEY_MSG:              DC.B    '                                > - BALANCE: ',0
+000038AF= 20 3C 20 31 20 3E ...   1172  SHOP_ITEM1_MSG:         DC.B    ' < 1 > - Ability upgrade: 1000 GOLD ',0
+000038D4= 20 20 20 20 20 20 ...   1173  NO_MONEY_MSG:           DC.B    '          >>> Insuficient funds, try again after killing a few Amanto <<<',0
+0000391E= 20 20 20 20 20 20 ...   1174  ASK_MSG:                DC.B    '                        Play?'
+0000393B= 0D 0A                   1175                          DC.B    $0D,$0A
+0000393D= 20 20 20 20 20 20 ...   1176                          DC.B    '                 To Play enter any number            '
+00003972= 0D 0A                   1177                          DC.B    $0D,$0A
+00003974= 20 20 20 20 20 20 ...   1178                          DC.B    '                    To EXIT enter 0           ',0
+000039A3= 20 20 20 20 20 20 ...   1179  DAYS_MSG:               DC.B    '                                 > - Day: ',0
+000039CE= 20 20 20 2D 2D 2D ...   1180  BATTLEFIELD_MSG:        DC.B    '   ----------       THE BATTLEFIELD       ----------                 '
+00003A13= 0D 0A                   1181                          DC.B    $0D,$0A
+00003A15= 20 20 20 20 20 20 ...   1182                          DC.B    '                                                 '
+00003A46= 0D 0A                   1183                          DC.B    $0D,$0A
+00003A48= 20 20 20 20 20 20 ...   1184                          DC.B    '      - You have entered the battlefield, prepare to battle  '
+00003A85= 0D 0A                   1185                          DC.B    $0D,$0A
+00003A87= 20 20 20 20 20 20 ...   1186                          DC.B    '      the Amanto and slash through the Carbon Dioxide with   '
+00003AC4= 0D 0A                   1187                          DC.B    $0D,$0A
+00003AC6= 20 20 20 20 20 20 ...   1188                          DC.B    '           your mighty swords to save the earth  '
+00003AF7= 0D 0A                   1189                          DC.B    $0D,$0A
+00003AF9= 20 20 20 20 20 20 ...   1190                          DC.B    '                                                 '
+00003B2A= 0D 0A                   1191                          DC.B    $0D,$0A
+00003B2C= 20 20 20 20 20 20 ...   1192                          DC.B    '           *To attack Amanto:             input 1'
+00003B5D= 0D 0A                   1193                          DC.B    $0D,$0A
+00003B5F= 20 20 20 20 20 20 ...   1194                          DC.B    '           *To attack Emission directly:  input 2'
+00003B90= 0D 0A                   1195                          DC.B    $0D,$0A
+00003B92= 20 20 20 20 20 20 ...   1196                          DC.B    '           *To return to the menu:        input 0',0
+00003BC4= 45 6E 65 6D 69 65 ...   1197  ENEMIES_KILLED_TODAY:   DC.B    'Enemies defeated: ',0
+00003BD7= 43 61 72 62 6F 6E ...   1198  EMISSION_SLASHED_TODAY: DC.B    'Carbon Dioxide slashed: ',0
+00003BF0= 20 20 20 20 20 20 ...   1199  OUT_STAMINA_MSG         DC.B    '      You are out of stamina, retreat warrior,'
+00003C1E= 0D 0A                   1200                          DC.B    $0D,$0A
+00003C20= 20 20 20 20 20 20 ...   1201                          DC.B    '         you have done enough, for today..',0
+00003C4B= 20 20 2D 2D 2D 2D ...   1202  SHOP_MSG:               DC.B    '  ----------           THE  SHOP          ----------                 '
+00003C90= 0D 0A                   1203                          DC.B    $0D,$0A
+00003C92= 20 20 20 20 20 20 ...   1204                          DC.B    '                                                 '
+00003CC3= 0D 0A                   1205                          DC.B    $0D,$0A
+00003CC5= 20 20 20 2D 20 48 ...   1206                          DC.B    '   - Here you can find the goods to ease the battle  '
+00003CFA= 0D 0A                   1207                          DC.B    $0D,$0A
+00003CFC= 20 77 69 74 68 20 ...   1208                          DC.B    ' with the Amanto and the Carbon emission in the front.   '
+00003D35= 0D 0A                   1209                          DC.B    $0D,$0A
+00003D37= 20 20 20 20 20 2D ...   1210                          DC.B    '     - Take your time and spend your gold coins  '
+00003D68= 0D 0A                   1211                          DC.B    $0D,$0A
+00003D6A= 20 20 20 20 20 20 ...   1212                          DC.B    '                       wisely..                             '
+00003DA6= 0D 0A                   1213                          DC.B    $0D,$0A
+00003DA8= 20 20 20 20 20 20 ...   1214                          DC.B    '                                                 '
+00003DD9= 0D 0A                   1215                          DC.B    $0D,$0A
+00003DDB= 20 20 20 20 20 20 ...   1216                          DC.B    '           '
+00003DE6= 0D 0A                   1217                          DC.B    $0D,$0A
+00003DE8= 20 20 20 20 20 20 ...   1218                          DC.B    '           '
+00003DF3= 0D 0A                   1219                          DC.B    $0D,$0A
+00003DF5= 20 20 20 20 20 20 ...   1220                          DC.B    '           ',0
+00003E01= 2D 2D 2D 2D 2D 2D ...   1221  LORE1_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+00003E51= 0D 0A                   1222                          DC.B    $0D,$0A
+00003E53= 20 20 20 20 20 20 ...   1223                          DC.B    '                   -------I--  Three swords style  --I-------'
+00003E90= 0D 0A                   1224                          DC.B    $0D,$0A
+00003E92= 20 20 20 20 20 20 ...   1225                          DC.B    '                                       |'
+00003EBA= 0D 0A                   1226                          DC.B    $0D,$0A
+00003EBC= 20 20 20 20 20 20 ...   1227                          DC.B    '                                      -T-'
+00003EE5= 0D 0A                   1228                          DC.B    $0D,$0A
+00003EE7= 20 20 20 20 20 20 ...   1229                          DC.B    '                                       |'
+00003F0F= 0D 0A                   1230                          DC.B    $0D,$0A
+00003F11= 20 20 20 20 20 20 ...   1231                          DC.B    '                                       |'
+00003F39= 0D 0A                   1232                          DC.B    $0D,$0A
+00003F3B= 20 20 20 20 20 20 ...   1233                          DC.B    '                                       |'
+00003F63= 0D 0A                   1234                          DC.B    $0D,$0A
+00003F65=                         1235                          DC.B    ''
+00003F65= 0D 0A                   1236                          DC.B    $0D,$0A
+00003F67=                         1237                          DC.B    ''
+00003F67= 0D 0A                   1238                          DC.B    $0D,$0A
+00003F69=                         1239                          DC.B    ''
+00003F69= 0D 0A                   1240                          DC.B    $0D,$0A
+00003F6B=                         1241                          DC.B    ''
+00003F6B= 0D 0A                   1242                          DC.B    $0D,$0A
+00003F6D=                         1243                          DC.B    ''
+00003F6D= 0D 0A                   1244                          DC.B    $0D,$0A
+00003F6F=                         1245                          DC.B    ''
+00003F6F= 0D 0A                   1246                          DC.B    $0D,$0A
+00003F71=                         1247                          DC.B    ''
+00003F71= 0D 0A                   1248                          DC.B    $0D,$0A
+00003F73= 20 20 20 20 20 20 ...   1249                          DC.B    '       - Legendary swordsman style, required immense strength and skill'
+00003FBA= 0D 0A                   1250                          DC.B    $0D,$0A
+00003FBC= 20 20 20 20 20 20 ...   1251                          DC.B    '              to utilize three swords at once - two in the palms,'
+00003FFD= 0D 0A                   1252                          DC.B    $0D,$0A
+00003FFF= 20 20 20 20 20 20 ...   1253                          DC.B    '          one in between theeth, clenched for grip and utilization of '
+00004045= 0D 0A                   1254                          DC.B    $0D,$0A
+00004047= 20 20 20 20 20 20 ...   1255                          DC.B    '              immense jaw strength, following thoroughly trained'
+00004087= 0D 0A                   1256                          DC.B    $0D,$0A
+00004089= 20 20 20 20 20 20 ...   1257                          DC.B    '                  neck muscles to move the sword as pleased.'
+000040C5= 0D 0A                   1258                          DC.B    $0D,$0A
+000040C7=                         1259                          DC.B    ''
+000040C7= 0D 0A                   1260                          DC.B    $0D,$0A
+000040C9=                         1261                          DC.B    ''
+000040C9= 0D 0A                   1262                          DC.B    $0D,$0A
+000040CB=                         1263                          DC.B    ''
+000040CB= 0D 0A                   1264                          DC.B    $0D,$0A
+000040CD=                         1265                          DC.B    ''
+000040CD= 0D 0A                   1266                          DC.B    $0D,$0A
+000040CF=                         1267                          DC.B    ''
+000040CF= 0D 0A                   1268                          DC.B    $0D,$0A
+000040D1=                         1269                          DC.B    ''
+000040D1= 0D 0A                   1270                          DC.B    $0D,$0A
+000040D3=                         1271                          DC.B    ''
+000040D3= 0D 0A                   1272                          DC.B    $0D,$0A
+000040D5=                         1273                          DC.B    ''
+000040D5= 0D 0A                   1274                          DC.B    $0D,$0A
+000040D7=                         1275                          DC.B    ''
+000040D7= 0D 0A                   1276                          DC.B    $0D,$0A
+000040D9=                         1277                          DC.B    ''
+000040D9= 0D 0A                   1278                          DC.B    $0D,$0A
+000040DB=                         1279                          DC.B    ''
+000040DB= 0D 0A                   1280                          DC.B    $0D,$0A
+000040DD= 2D 2D 2D 2D 2D 2D ...   1281                          DC.B    '---------------------------------------.----------------------------------------'
+0000412D= 0D 0A                   1282                          DC.B    $0D,$0A
+0000412F= 3C 45 4E 54 45 52 ...   1283                          DC.B    '<ENTER> To continue..',0
+00004145= 2D 2D 2D 2D 2D 2D ...   1284  LORE2_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+00004195= 0D 0A                   1285                          DC.B    $0D,$0A
+00004197= 20 20 20 20 20 20 ...   1286                          DC.B    '                    -------I--  Two swords style  --I-------                    '
+000041E7= 0D 0A                   1287                          DC.B    $0D,$0A
+000041E9=                         1288                          DC.B    ''
+000041E9= 0D 0A                   1289                          DC.B    $0D,$0A
+000041EB=                         1290                          DC.B    ''
+000041EB= 0D 0A                   1291                          DC.B    $0D,$0A
+000041ED=                         1292                          DC.B    ''
+000041ED= 0D 0A                   1293                          DC.B    $0D,$0A
+000041EF=                         1294                          DC.B    ''
+000041EF= 0D 0A                   1295                          DC.B    $0D,$0A
+000041F1=                         1296                          DC.B    ''
+000041F1= 0D 0A                   1297                          DC.B    $0D,$0A
+000041F3= 20 20 20 20 20 20 ...   1298                          DC.B    '           '
+000041FE= 0D 0A                   1299                          DC.B    $0D,$0A
+00004200= 20 20 20 20 20 20 ...   1300                          DC.B    '           '
+0000420B= 0D 0A                   1301                          DC.B    $0D,$0A
+0000420D= 20 20 20 20 20 20 ...   1302                          DC.B    '           '
+00004218= 0D 0A                   1303                          DC.B    $0D,$0A
+0000421A= 20 20 20 20 20 20 ...   1304                          DC.B    '           '
+00004225= 0D 0A                   1305                          DC.B    $0D,$0A
+00004227= 20 20 20 20 20 20 ...   1306                          DC.B    '           '
+00004232= 0D 0A                   1307                          DC.B    $0D,$0A
+00004234= 20 20 20 20 20 20 ...   1308                          DC.B    '           '
+0000423F= 0D 0A                   1309                          DC.B    $0D,$0A
+00004241= 20 20 20 20 20 20 ...   1310                          DC.B    '           '
+0000424C= 0D 0A                   1311                          DC.B    $0D,$0A
+0000424E= 20 20 20 20 20 20 ...   1312                          DC.B    '           - Not so widely utilized swordsman style, also as recalled '
+00004294= 0D 0A                   1313                          DC.B    $0D,$0A
+00004296= 20 20 20 20 20 20 ...   1314                          DC.B    '                 as dual wielding, use of two unsheathed swords'
+000042D5= 0D 0A                   1315                          DC.B    $0D,$0A
+000042D7= 20 20 20 20 20 20 ...   1316                          DC.B    '           at the same time to balance out offensive along the defensive. '
+00004321= 0D 0A                   1317                          DC.B    $0D,$0A
+00004323= 20 20 20 20 20 20 ...   1318                          DC.B    '                 Perfect combination to battle shielded opponents'
+00004364= 0D 0A                   1319                          DC.B    $0D,$0A
+00004366= 20 20 20 20 20 20 ...   1320                          DC.B    '           to place them out of balance by a strike and finish them off'
+000043AD= 0D 0A                   1321                          DC.B    $0D,$0A
+000043AF= 20 20 20 20 20 20 ...   1322                          DC.B    '                             with the second slash.'
+000043E2= 0D 0A                   1323                          DC.B    $0D,$0A
+000043E4= 20 20 20 20 20 20 ...   1324                          DC.B    '           '
+000043EF= 0D 0A                   1325                          DC.B    $0D,$0A
+000043F1= 20 20 20 20 20 20 ...   1326                          DC.B    '           '
+000043FC= 0D 0A                   1327                          DC.B    $0D,$0A
+000043FE= 20 20 20 20 20 20 ...   1328                          DC.B    '           '
+00004409= 0D 0A                   1329                          DC.B    $0D,$0A
+0000440B= 20 20 20 20 20 20 ...   1330                          DC.B    '           '
+00004416= 0D 0A                   1331                          DC.B    $0D,$0A
+00004418= 20 20 20 20 20 20 ...   1332                          DC.B    '           '
+00004423= 0D 0A                   1333                          DC.B    $0D,$0A
+00004425= 20 20 20 20 20 20 ...   1334                          DC.B    '           '
+00004430= 0D 0A                   1335                          DC.B    $0D,$0A
+00004432= 20 20 20 20 20 20 ...   1336                          DC.B    '           '
+0000443D= 0D 0A                   1337                          DC.B    $0D,$0A
+0000443F= 20 20 20 20 20 20 ...   1338                          DC.B    '           '
+0000444A= 0D 0A                   1339                          DC.B    $0D,$0A
+0000444C= 20 20 20 20 20 20 ...   1340                          DC.B    '           '
+00004457= 0D 0A                   1341                          DC.B    $0D,$0A
+00004459= 20 20 20                1342                          DC.B    '   '
+0000445C= 0D 0A                   1343                          DC.B    $0D,$0A
+0000445E= 2D 2D 2D 2D 2D 2D ...   1344                          DC.B    '---------------------------------------.----------------------------------------'
+000044AE= 0D 0A                   1345                          DC.B    $0D,$0A
+000044B0= 3C 45 4E 54 45 52 ...   1346                          DC.B    '<ENTER> To continue..',0
+000044C6                          1347                          
+000044C6= 2D 2D 2D 2D 2D 2D ...   1348  LORE3_MSG:              DC.B    '---------------------------------------.----------------------------------------'
+00004516= 0D 0A                   1349                          DC.B    $0D,$0A
+00004518= 20 20 20 20 20 20 ...   1350                          DC.B    '                                One sword style'
+00004547= 0D 0A                   1351                          DC.B    $0D,$0A
+00004549= 20 20 20 20 20 20 ...   1352                          DC.B    '                                       |                      '
+00004587= 0D 0A                   1353                          DC.B    $0D,$0A
+00004589= 20 20 20 20 20 20 ...   1354                          DC.B    '                                      -T-  '
+000045B4= 0D 0A                   1355                          DC.B    $0D,$0A
+000045B6= 20 20 20 20 20 20 ...   1356                          DC.B    '                                       |'
+000045DE= 0D 0A                   1357                          DC.B    $0D,$0A
+000045E0= 20 20 20 20 20 20 ...   1358                          DC.B    '                                       |'
+00004608= 0D 0A                   1359                          DC.B    $0D,$0A
+0000460A= 20 20 20 20 20 20 ...   1360                          DC.B    '                                       |'
+00004632= 0D 0A                   1361                          DC.B    $0D,$0A
+00004634= 20 20 20 20 20 20 ...   1362                          DC.B    '           '
+0000463F= 0D 0A                   1363                          DC.B    $0D,$0A
+00004641= 20 20 20 20 20 20 ...   1364                          DC.B    '           '
+0000464C= 0D 0A                   1365                          DC.B    $0D,$0A
+0000464E= 20 20 20 20 20 20 ...   1366                          DC.B    '           '
+00004659= 0D 0A                   1367                          DC.B    $0D,$0A
+0000465B= 20 20 20 20 20 20 ...   1368                          DC.B    '           '
+00004666= 0D 0A                   1369                          DC.B    $0D,$0A
+00004668= 20 20 20 20 20 20 ...   1370                          DC.B    '           '
+00004673= 0D 0A                   1371                          DC.B    $0D,$0A
+00004675= 20 20 20 20 20 20 ...   1372                          DC.B    '           '
+00004680= 0D 0A                   1373                          DC.B    $0D,$0A
+00004682= 20 20 20 20 20 20 ...   1374                          DC.B    '           '
+0000468D= 0D 0A                   1375                          DC.B    $0D,$0A
+0000468F= 20 20 20 20 20 20 ...   1376                          DC.B    '       - Legendary swordsman style, required immense strength and skill        '
+000046DE= 0D 0A                   1377                          DC.B    $0D,$0A
+000046E0= 20 20 20 20 20 20 ...   1378                          DC.B    '              to utilize three swords at once - two in the palms,'
+00004721= 0D 0A                   1379                          DC.B    $0D,$0A
+00004723= 20 20 20 20 20 20 ...   1380                          DC.B    '          one in between theeth, clenched for grip and utilization of '
+00004769= 0D 0A                   1381                          DC.B    $0D,$0A
+0000476B= 20 20 20 20 20 20 ...   1382                          DC.B    '              immense jaw strength, following thoroughly trained'
+000047AB= 0D 0A                   1383                          DC.B    $0D,$0A
+000047AD= 20 20 20 20 20 20 ...   1384                          DC.B    '                  neck muscles to move the sword as pleased.'
+000047E9= 0D 0A                   1385                          DC.B    $0D,$0A
+000047EB= 20 20 20 20 20 20 ...   1386                          DC.B    '           '
+000047F6= 0D 0A                   1387                          DC.B    $0D,$0A
+000047F8= 20 20 20 20 20 20 ...   1388                          DC.B    '           '
+00004803= 0D 0A                   1389                          DC.B    $0D,$0A
+00004805= 20 20 20 20 20 20 ...   1390                          DC.B    '           '
+00004810= 0D 0A                   1391                          DC.B    $0D,$0A
+00004812= 20 20 20 20 20 20 ...   1392                          DC.B    '           '
+0000481D= 0D 0A                   1393                          DC.B    $0D,$0A
+0000481F= 20 20 20 20 20 20 ...   1394                          DC.B    '           '
+0000482A= 0D 0A                   1395                          DC.B    $0D,$0A
+0000482C= 20 20 20 20 20 20 ...   1396                          DC.B    '           '
+00004837= 0D 0A                   1397                          DC.B    $0D,$0A
+00004839= 20 20 20 20 20 20 ...   1398                          DC.B    '           '
+00004844= 0D 0A                   1399                          DC.B    $0D,$0A
+00004846= 20 20 20 20 20 20 ...   1400                          DC.B    '           '
+00004851= 0D 0A                   1401                          DC.B    $0D,$0A
+00004853= 20 20 20 20 20 20 ...   1402                          DC.B    '           '
+0000485E= 0D 0A                   1403                          DC.B    $0D,$0A
+00004860= 20 20 20 20 20 20 ...   1404                          DC.B    '           '
+0000486B= 0D 0A                   1405                          DC.B    $0D,$0A
+0000486D= 20 20 20                1406                          DC.B    '   '
+00004870= 0D 0A                   1407                          DC.B    $0D,$0A
+00004872= 2D 2D 2D 2D 2D 2D ...   1408                          DC.B    '---------------------------------------.----------------------------------------'
+000048C2= 0D 0A                   1409                          DC.B    $0D,$0A
+000048C4= 3C 45 4E 54 45 52 ...   1410                          DC.B    '<ENTER> To continue..',0
+000048DA= 2D 2D 2D 2D 2D 2D ...   1411  RECONSIDER_MSG:         DC.B    '---------------------------------------.----------------------------------------'
+0000492A= 0D 0A                   1412                          DC.B    $0D,$0A
+0000492C=                         1413                          DC.B    ''
+0000492C= 0D 0A                   1414                          DC.B    $0D,$0A
+0000492E=                         1415                          DC.B    ''
+0000492E= 0D 0A                   1416                          DC.B    $0D,$0A
+00004930=                         1417                          DC.B    ''
+00004930= 0D 0A                   1418                          DC.B    $0D,$0A
+00004932=                         1419                          DC.B    ''
+00004932= 0D 0A                   1420                          DC.B    $0D,$0A
+00004934=                         1421                          DC.B    ''
+00004934= 0D 0A                   1422                          DC.B    $0D,$0A
+00004936=                         1423                          DC.B    ''
+00004936= 0D 0A                   1424                          DC.B    $0D,$0A
+00004938=                         1425                          DC.B    ''
+00004938= 0D 0A                   1426                          DC.B    $0D,$0A
+0000493A=                         1427                          DC.B    ''
+0000493A= 0D 0A                   1428                          DC.B    $0D,$0A
+0000493C=                         1429                          DC.B    ''
+0000493C= 0D 0A                   1430                          DC.B    $0D,$0A
+0000493E=                         1431                          DC.B    ''
+0000493E= 0D 0A                   1432                          DC.B    $0D,$0A
+00004940=                         1433                          DC.B    ''
+00004940= 0D 0A                   1434                          DC.B    $0D,$0A
+00004942=                         1435                          DC.B    ''
+00004942= 0D 0A                   1436                          DC.B    $0D,$0A
+00004944=                         1437                          DC.B    ''
+00004944= 0D 0A                   1438                          DC.B    $0D,$0A
+00004946= 20 2D 2D 2D 2D 2D ...   1439                          DC.B    ' --------------------- Do you wish to lock in this style? ---------------------'
+00004995= 0D 0A                   1440                          DC.B    $0D,$0A
+00004997= 20 2D 2D 2D 2D 2D ...   1441                          DC.B    ' ------------ Input: 1 to confirm ----------- Input: 0 to cancel -------------'
+000049E5= 0D 0A                   1442                          DC.B    $0D,$0A
+000049E7=                         1443                          DC.B    ''
+000049E7= 0D 0A                   1444                          DC.B    $0D,$0A
+000049E9=                         1445                          DC.B    ''
+000049E9= 0D 0A                   1446                          DC.B    $0D,$0A
+000049EB=                         1447                          DC.B    ''
+000049EB= 0D 0A                   1448                          DC.B    $0D,$0A
+000049ED=                         1449                          DC.B    ''
+000049ED= 0D 0A                   1450                          DC.B    $0D,$0A
+000049EF=                         1451                          DC.B    ''
+000049EF= 0D 0A                   1452                          DC.B    $0D,$0A
+000049F1=                         1453                          DC.B    ''
+000049F1= 0D 0A                   1454                          DC.B    $0D,$0A
+000049F3=                         1455                          DC.B    ''
+000049F3= 0D 0A                   1456                          DC.B    $0D,$0A
+000049F5=                         1457                          DC.B    ''
+000049F5= 0D 0A                   1458                          DC.B    $0D,$0A
+000049F7=                         1459                          DC.B    ''
+000049F7= 0D 0A                   1460                          DC.B    $0D,$0A
+000049F9=                         1461                          DC.B    ''
+000049F9= 0D 0A                   1462                          DC.B    $0D,$0A
+000049FB=                         1463                          DC.B    ''
+000049FB= 0D 0A                   1464                          DC.B    $0D,$0A
+000049FD=                         1465                          DC.B    ''
+000049FD= 0D 0A                   1466                          DC.B    $0D,$0A
+000049FF=                         1467                          DC.B    ''
+000049FF= 0D 0A                   1468                          DC.B    $0D,$0A
+00004A01=                         1469                          DC.B    ''
+00004A01= 0D 0A                   1470                          DC.B    $0D,$0A
+00004A03=                         1471                          DC.B    ''
+00004A03= 0D 0A                   1472                          DC.B    $0D,$0A
+00004A05= 2D 2D 2D 2D 2D 2D ...   1473                          DC.B    '---------------------------------------.----------------------------------------',0                 
+00004A56= 2D 2D 2D 2D 2D 2D ...   1474  PAGE_SIZE:              DC.B    '---------------------------------------.----------------------------------------'
+00004AA6= 0D 0A                   1475                          DC.B    $0D,$0A
+00004AA8=                         1476                          DC.B    ''
+00004AA8= 0D 0A                   1477                          DC.B    $0D,$0A
+00004AAA=                         1478                          DC.B    ''
+00004AAA= 0D 0A                   1479                          DC.B    $0D,$0A
+00004AAC=                         1480                          DC.B    ''
+00004AAC= 0D 0A                   1481                          DC.B    $0D,$0A
+00004AAE=                         1482                          DC.B    ''
+00004AAE= 0D 0A                   1483                          DC.B    $0D,$0A
+00004AB0=                         1484                          DC.B    ''
+00004AB0= 0D 0A                   1485                          DC.B    $0D,$0A
+00004AB2=                         1486                          DC.B    ''
+00004AB2= 0D 0A                   1487                          DC.B    $0D,$0A
+00004AB4=                         1488                          DC.B    ''
+00004AB4= 0D 0A                   1489                          DC.B    $0D,$0A
+00004AB6=                         1490                          DC.B    ''
+00004AB6= 0D 0A                   1491                          DC.B    $0D,$0A
+00004AB8=                         1492                          DC.B    ''
+00004AB8= 0D 0A                   1493                          DC.B    $0D,$0A
+00004ABA=                         1494                          DC.B    ''
+00004ABA= 0D 0A                   1495                          DC.B    $0D,$0A
+00004ABC=                         1496                          DC.B    ''
+00004ABC= 0D 0A                   1497                          DC.B    $0D,$0A
+00004ABE=                         1498                          DC.B    ''
+00004ABE= 0D 0A                   1499                          DC.B    $0D,$0A
+00004AC0=                         1500                          DC.B    ''
+00004AC0= 0D 0A                   1501                          DC.B    $0D,$0A
+00004AC2=                         1502                          DC.B    ''
+00004AC2= 0D 0A                   1503                          DC.B    $0D,$0A
+00004AC4= 2D 20 20 20 20 20 ...   1504                          DC.B    '-                                     mid                                      -'
+00004B14= 0D 0A                   1505                          DC.B    $0D,$0A
+00004B16=                         1506                          DC.B    ''
+00004B16= 0D 0A                   1507                          DC.B    $0D,$0A
+00004B18=                         1508                          DC.B    ''
+00004B18= 0D 0A                   1509                          DC.B    $0D,$0A
+00004B1A=                         1510                          DC.B    ''
+00004B1A= 0D 0A                   1511                          DC.B    $0D,$0A
+00004B1C=                         1512                          DC.B    ''
+00004B1C= 0D 0A                   1513                          DC.B    $0D,$0A
+00004B1E=                         1514                          DC.B    ''
+00004B1E= 0D 0A                   1515                          DC.B    $0D,$0A
+00004B20=                         1516                          DC.B    ''
+00004B20= 0D 0A                   1517                          DC.B    $0D,$0A
+00004B22=                         1518                          DC.B    ''
+00004B22= 0D 0A                   1519                          DC.B    $0D,$0A
+00004B24=                         1520                          DC.B    ''
+00004B24= 0D 0A                   1521                          DC.B    $0D,$0A
+00004B26=                         1522                          DC.B    ''
+00004B26= 0D 0A                   1523                          DC.B    $0D,$0A
+00004B28=                         1524                          DC.B    ''
+00004B28= 0D 0A                   1525                          DC.B    $0D,$0A
+00004B2A=                         1526                          DC.B    ''
+00004B2A= 0D 0A                   1527                          DC.B    $0D,$0A
+00004B2C=                         1528                          DC.B    ''
+00004B2C= 0D 0A                   1529                          DC.B    $0D,$0A
+00004B2E=                         1530                          DC.B    ''
+00004B2E= 0D 0A                   1531                          DC.B    $0D,$0A
+00004B30=                         1532                          DC.B    ''
+00004B30= 0D 0A                   1533                          DC.B    $0D,$0A
+00004B32=                         1534                          DC.B    ''
+00004B32= 0D 0A                   1535                          DC.B    $0D,$0A
+00004B34= 2D 2D 2D 2D 2D 2D ...   1536                          DC.B    '---------------------------------------.----------------------------------------',0
+00004B85                          1537  
+00004B85                          1538  
+00004B85                          1539                         
+00004B85                          1540      END START
 
 No errors detected
 No warnings generated
@@ -1542,108 +1550,108 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ABILITY_DAMAGE_MSG  36D0
+ABILITY_DAMAGE_MSG  36EA
 ABILITY_LEVEL       1
-ABILITY_LEVEL_MSG   3700
+ABILITY_LEVEL_MSG   371A
 ABILITY_MLTPR       2
-ASK_MSG             3904
-ASK_PLAY            28DC
+ASK_MSG             391E
+ASK_PLAY            28F6
 ATTACK              3
 ATTACK_DIRECTLY     2622
 ATTACK_EMISSION     2420
 ATTACK_ENEMY        24BC
-BATTLEFIELD_MSG     39B4
+BATTLEFIELD_MSG     39CE
 BOUGHT_ABILITY_LEVEL  282A
-CLEAR_SCREEN        28C8
-CONFIRM_STYLE       29A0
-CRLF                2A36
+CLEAR_SCREEN        28E2
+CONFIRM_STYLE       29BA
+CRLF                2A50
 DAMAGE_EMISSION_ONE  4B
 DAMAGE_EMISSION_THREE  FA
 DAMAGE_EMISSION_TWO  96
 DAYS_COUNT          1
 DAYS_DISPLAY        2168
-DAYS_MSG            3989
-DECORATE            28A8
-EMISSION            3786
+DAYS_MSG            39A3
+DECORATE            28C2
+EMISSION            37A0
 EMISSION_COUNT      7530
 EMISSION_DISPLAY    20F0
 EMISSION_INC        28
 EMISSION_SLASHED    0
-EMISSION_SLASHED_TODAY  3BBD
+EMISSION_SLASHED_TODAY  3BD7
 END                 2006
-ENDL                2A20
+ENDL                2A3A
 ENEMIES_DEFEATED    0
-ENEMIES_KILLED_TODAY  3BAA
-ENEMIES_MSG         3808
+ENEMIES_KILLED_TODAY  3BC4
+ENEMIES_MSG         3822
 ENEMY_COUNT         C8
 ENEMY_DISPLAY       210E
 EXIT                0
-FIGHTING_STYLE_MSG  360A
-FIRST_PICK          3730
+FIGHTING_STYLE_MSG  3624
+FIRST_PICK          374A
 GAME                2000
 GAMELOOP            205A
-HALT                28D4
-HUD                 2884
+HALT                28EE
+HUD                 289E
 INITIALS_D          20C2
 INPUT               2054
 LEVEL_BOUGHT        1
-LOOP                2894
-LOOP_MSG            3399
-LORE                2904
-LORE1_MSG           3DE7
-LORE2_MSG           412B
-LORE3_MSG           44AC
-LORE_1              2922
-LORE_2              2946
-LORE_3              2972
-MONEY_COUNT         5DC
+LOOP                28AE
+LOOP_MSG            33B3
+LORE                291E
+LORE1_MSG           3E01
+LORE2_MSG           4145
+LORE3_MSG           44C6
+LORE_1              293C
+LORE_2              2960
+LORE_3              298C
+MONEY_COUNT         96
 MONEY_DISPLAY       214A
 MONEY_INC           5
-MONEY_MSG           3867
-NEXT                2898
+MONEY_MSG           3881
+NEXT                28B2
 NEXT_DAY            4
-NOT_ENOUGH_MONEY    2868
-NO_MONEY_MSG        38BA
+NOT_ENOUGH_MONEY    2882
+NO_MONEY_MSG        38D4
 NO_STAMINA          260A
-OUT                 28B2
-OUT_STAMINA_MSG     3BD6
-PAGE_SIZE           4A3C
+OUT                 28CC
+OUT_STAMINA_MSG     3BF0
+PAGE_SIZE           4A56
 PICK_1              2184
 PICK_2              2248
 PICK_3              230C
-RECONSIDER_MSG      48C0
-REPLAY              29D6
-REPLAY_MSG          339B
-SECOND_PICK         3750
+RECONSIDER_MSG      48DA
+REPLAY              29F0
+REPLAY_MSG          33B5
+SECOND_PICK         376A
 SHOP                2
 SHOP_ENTER          27C8
-SHOP_ITEM1_MSG      3895
-SHOP_MSG            3C31
+SHOP_ITEM1_MSG      38AF
+SHOP_MSG            3C4B
 STAMINA_COUNT       64
 STAMINA_DEC_1       2
 STAMINA_DEC_2       4
 STAMINA_DEC_3       5
 STAMINA_DISPLAY     212C
 STAMINA_INC         A
-STAMINA_MSG         3839
-STAMINA_NORMAL_MSG  3668
-STAMINA_USE_MSG     369C
+STAMINA_MSG         3853
+STAMINA_NORMAL_MSG  3682
+STAMINA_USE_MSG     36B6
 START               1000
-STARTER_MSG         37B5
-STARTING_INFO       2B4B
+STARTER_MSG         37CF
+STARTING_INFO       2B65
 STATISTICS          1
 STATS               2070
-STYLE_DAMAGE_MSG    3635
-STYLE_MSG           322B
-STYLE_TITLE         31DB
+STYLE_DAMAGE_MSG    364F
+STYLE_MSG           3245
+STYLE_TITLE         31F5
 SUB_ONE_SWORD       25C2
 SUB_ONE_SWORD_DI    271C
 SUB_THREE_SWORDS    2532
 SUB_THREE_SWORDS_DI  2652
 SUB_TWO_SWORDS      257A
 SUB_TWO_SWORDS_DI   26B6
-THIRD_PICK          376C
+THIRD_PICK          3786
 UPDATE              23D0
 WEAPONS             2784
 WELCOME             200A
-WELCOME_MSG         2A39
+WELCOME_MSG         2A53
