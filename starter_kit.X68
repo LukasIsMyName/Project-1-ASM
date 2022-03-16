@@ -2,7 +2,9 @@
 * NAME: LUKAS SUMKAUSKAS
 * ID: C00263149
 * DATE: 2022 Feb
-* KNOWN BUGS: None
+* KNOWN BUGS: If in select mode no number is input and returned,
+* the combat system fails
+*
 * Description: Emission fighting simulator with multiple I/O, 
 * where you pick swords to fight the carbon emission instead of the standard.
 
@@ -458,7 +460,6 @@ ATTACK_EMISSION:
     BSR     DECORATE
     BSR     CLEAR_SCREEN
     BSR     ENDL
-    BSR     DECORATE
     LEA     BATTLEFIELD_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -514,10 +515,11 @@ ATTACK_ENEMY:
                             
                             *DECREMENTS THE ENEMIES COUNT
     CLR     D1
-    MOVE.W  (A3),D1
+    LEA     $5000,A1
+    MOVE.W  (A1),D1
     SUB.W   #1,D1
     MOVE.W  D1,$5000
-    LEA     $5000,A3
+    LEA     $5000,A1
                             *INCREMENTS DEFEATED ENEMIES COUNT
     CLR     D1
     LEA     $10000,A1
@@ -550,24 +552,31 @@ ATTACK_ENEMY:
 SUB_THREE_SWORDS:
     CLR     D1
     CLR     D3
+    LEA     $7000,A1
     MOVE.B  STAMINA_DEC_3,D3
-    MOVE.B  $7000,D1
+    MOVE.B  (A1),D1
     CMP     D3,D1
     BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
 
-                                *DECREMENTS EMISSION TOTAL    
-    MOVE.W  (A4),D1
+                                *DECREMENTS EMISSION TOTAL
+    CLR     D1
+    LEA     $6000,A1    
+    MOVE.W  (A1),D1
     SUB.W   #DAMAGE_EMISSION_THREE,D1
     MOVE.W  D1,$6000
-    LEA     $6000,A4
-                                *INCREMENTS EMISSION SLASHED COUNT    
-    MOVE.W  $11000,D1
+    LEA     $6000,A1
+                                *INCREMENTS EMISSION SLASHED COUNT
+    CLR     D1
+    LEA     $11000,A1    
+    MOVE.W  (A1),D1
     ADD.W   #DAMAGE_EMISSION_THREE,D1
     MOVE.W  D1,$11000
     LEA     $11000,A1
     
                                  *DECREMENTS STAMINA
-    MOVE.B  $7000,D1
+    CLR     D1
+    LEA     $7000,A1
+    MOVE.B  (A1),D1
     SUB.B   #STAMINA_DEC_3,D1
     MOVE.B  D1,$7000
     LEA     $7000,A1
@@ -802,7 +811,6 @@ SHOP_ENTER:
     BSR     DECORATE
     BSR     CLEAR_SCREEN
     BSR     ENDL
-    BSR     DECORATE
     LEA     SHOP_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -1139,20 +1147,32 @@ STYLE_MSG:      DC.B    '                           SELECT YOUR FIGHTING STYLE '
                 DC.B    $0D,$0A
                 DC.B    '                                       ',0
 LOOP_MSG:       DC.B    '.',0
-REPLAY_MSG:     DC.B    '   ----------       What do you wish to do?       ----------                                       '
+REPLAY_MSG:     DC.B    '.------------------------------- PICK YOUR FATE -------------------------------.'
                 DC.B    $0D,$0A
-                DC.B    '                                                 '
+                DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '               *Input: 1 to display the current statistics                                                 '
+                DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '               *Input: 2 to open the shop menu                                                 '
+                DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '               *Input: 3 to fight the enemies                                                 '
+                DC.B    '              - - > <ENTER>: 1 to display the current stats '
                 DC.B    $0D,$0A
-                DC.B    '               *Input: 4 to get to the next day'
+                DC.B    '              - - > <ENTER>: 2 to open the shop GUI    '
                 DC.B    $0D,$0A
-                DC.B    '               *Input: 0 to EXIT the game                                                 '
-                DC.B    '                             ',0
+                DC.B    '              - - > <ENTER>: 3 to enter the battlefield  '
+                DC.B    $0D,$0A
+                DC.B    '              - - > <ENTER>: 4 to sleep until the next morning'
+                DC.B    $0D,$0A
+                DC.B    '              - - > <ENTER>: 0 to EXIT the game '
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '---------------------------------------.----------------------------------------',0
+
 FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
 STYLE_DAMAGE_MSG:       DC.B    '                            > - Your base damage: ',0
 STAMINA_NORMAL_MSG:     DC.B    '                           > - Normal stamina use: ',0
@@ -1177,47 +1197,58 @@ ASK_MSG:                DC.B    '                        Play?'
                         DC.B    $0D,$0A
                         DC.B    '                    To EXIT enter 0           ',0
 DAYS_MSG:               DC.B    '                                 > - Day: ',0
-BATTLEFIELD_MSG:        DC.B    '   ----------       THE BATTLEFIELD       ----------                 '
+BATTLEFIELD_MSG:        DC.B    '.------------------------------- THE BATTLEFIELD ------------------------------.'
                         DC.B    $0D,$0A
                         DC.B    '                                                 '
                         DC.B    $0D,$0A
-                        DC.B    '      - You have entered the battlefield, prepare to battle  '
+                        DC.B    '             - You have entered the battlefield, prepare to battle  '
                         DC.B    $0D,$0A
-                        DC.B    '      the Amanto and slash through the Carbon Dioxide with   '
+                        DC.B    '               the Amanto and slash through the Carbon Dioxide with   '
                         DC.B    $0D,$0A
-                        DC.B    '           your mighty swords to save the earth  '
+                        DC.B    '               your mighty swords to save the earth  '
                         DC.B    $0D,$0A
-                        DC.B    '                                                 '
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '           *To attack Amanto:             input 1'
+                        DC.B    '                  - - > <ENTER> 1: To attack Amanto'
                         DC.B    $0D,$0A
-                        DC.B    '           *To attack Emission directly:  input 2'
+                        DC.B    '                  - - > <ENTER> 2: To attack Emission directly'
                         DC.B    $0D,$0A
-                        DC.B    '           *To return to the menu:        input 0',0
-ENEMIES_KILLED_TODAY:   DC.B    'Enemies defeated: ',0
-EMISSION_SLASHED_TODAY: DC.B    'Carbon Dioxide slashed: ',0
-OUT_STAMINA_MSG         DC.B    '      You are out of stamina, retreat warrior,'
+                        DC.B    '                  - - > <ENTER> 0: To return to the menu'
                         DC.B    $0D,$0A
-                        DC.B    '         you have done enough, for today..',0
-SHOP_MSG:               DC.B    '  ----------           THE  SHOP          ----------                 '
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '                                                 '
+                        DC.B    ''
+                        DC.B    '---------------------------------------.----------------------------------------',0
+ENEMIES_KILLED_TODAY:   DC.B    '                             > - Enemies defeated: ',0
+EMISSION_SLASHED_TODAY: DC.B    '                       > - Carbon Dioxide slashed: ',0
+OUT_STAMINA_MSG         DC.B    '               >>> You are out of stamina, retreat warrior <<<,'
                         DC.B    $0D,$0A
-                        DC.B    '   - Here you can find the goods to ease the battle  '
+                        DC.B    '                    >>you have done enough, for today..<<',0
+SHOP_MSG:               DC.B    '.--------------------------------- THE  SHOP ---------------------------------.'
                         DC.B    $0D,$0A
-                        DC.B    ' with the Amanto and the Carbon emission in the front.   '
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '     - Take your time and spend your gold coins  '
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '                       wisely..                             '
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '                                                 '
+                        DC.B    '             - Here you can find the goods to ease the battle  '
                         DC.B    $0D,$0A
-                        DC.B    '           '
+                        DC.B    '               with the Carbon emission and Amanto in the front.   '
                         DC.B    $0D,$0A
-                        DC.B    '           '
+                        DC.B    '             - Take your time and spend your gold coins  '
                         DC.B    $0D,$0A
-                        DC.B    '           ',0
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '                                     wisely..'
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    ''
+                        DC.B    $0D,$0A
+                        DC.B    '---------------------------------------.----------------------------------------',0
 LORE1_MSG:              DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
                         DC.B    '                   -------I--  Three swords style  --I-------'
