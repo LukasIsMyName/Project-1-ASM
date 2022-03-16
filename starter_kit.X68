@@ -52,7 +52,7 @@ ABILITY_MLTPR     EQU 2      DAMAGE MULTIPLIED ON ABILITY USE
 
 *START OF GAME
 START:
-    MOVE.W  #EMISSION_COUNT,$6000      EMISSION COUNT PLACED IN MEMORY 6000
+    MOVE.L  #EMISSION_COUNT,$13000      EMISSION COUNT PLACED IN MEMORY 13000
     MOVE.W  #ENEMY_COUNT,$5000         ENEMIES COUNT PLACED IN MEMORY 5000
     MOVE.B  #STAMINA_COUNT,$7000       STAMINA COUNT PLACED IN 7000
     MOVE.W  #MONEY_COUNT,$8000         MONEY COUNT PLACED IN 8000
@@ -64,12 +64,13 @@ START:
     MOVE.B  #ABILITY_MLTPR,$4800       ABILITY MULTIPLIER PLACED IN MEMORY 4800
     MOVE.B  #FATIGUE_COUNT,$4600       FATIGUE COUNT PLACED IN MEMORY 4600
     MOVE.B  #FATIGUE_DEC,$4650         FATIGUE DECREMENT PLACED IN MEMORY 4650 
-    LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
+    LEA     $13000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
     LEA     $7000,A2
     LEA     $8000,A5
     LEA     $9000,A6
-
+    
+    BSR     CLEAR_SCREEN
     BSR     WELCOME    BRANCH TO THE WELCOME SUBROUTINE
     BSR     DECORATE
     BSR     INPUT      BRANCH TO THE INPUT SUBROUTINE
@@ -163,25 +164,28 @@ STATS:
     BGT     PICK_3
     
 INITIALS_D:
+    BSR     STAMINA_DISPLAY
+    BSR     ENDL
+    BSR     FATIGUE_DISPLAY
+    BSR     ENDL
+    BSR     ENDL
     BSR     EMISSION_DISPLAY
     BSR     ENDL
     BSR     ENEMY_DISPLAY
     BSR     ENDL
-    BSR     STAMINA_DISPLAY
     BSR     ENDL
     BSR     MONEY_DISPLAY
     BSR     ENDL
     BSR     DAYS_DISPLAY
-    BSR     ENDL
-    BSR     FATIGUE_DISPLAY
     BSR     HALT
     JMP     REPLAY
    
 EMISSION_DISPLAY:                         *** DISPLAY THE INITIAL EMISSION 
     CLR     D1
     BSR     ENDL
-    MOVE.W  (A4),D6
-    MOVE.W  D6,D1
+    LEA     $13000,A1
+    MOVE.L  (A1),D6
+    MOVE.L  D6,D1
     LEA     EMISSION,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -192,7 +196,8 @@ EMISSION_DISPLAY:                         *** DISPLAY THE INITIAL EMISSION
 ENEMY_DISPLAY:                         *** DISPLAY THE INITIAL ENEMY COUNT 
     CLR     D1
     BSR     ENDL
-    MOVE.W  (A3),D5
+    LEA     $5000,A1
+    MOVE.W  (A1),D5
     MOVE.W  D5,D1
     LEA     ENEMIES_MSG,A1
     MOVE.B  #14,D0
@@ -215,7 +220,8 @@ STAMINA_DISPLAY:
 MONEY_DISPLAY:
     CLR     D1
     BSR     ENDL
-    MOVE.W  (A5),D3
+    LEA     $8000,A1
+    MOVE.W  (A1),D3
     MOVE.W  D3,D1
     LEA     MONEY_MSG,A1
     MOVE.B  #14,D0
@@ -226,7 +232,8 @@ MONEY_DISPLAY:
 DAYS_DISPLAY:
     CLR     D1
     BSR     ENDL
-    MOVE.W  (A6),D1
+    LEA     $9000,A1
+    MOVE.W  (A1),D1
     LEA     DAYS_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -614,11 +621,11 @@ SUB_THREE_SWORDS:
 
                                 *DECREMENTS EMISSION TOTAL
     CLR     D1
-    LEA     $6000,A1    
-    MOVE.W  (A1),D1
-    SUB.W   #DAMAGE_EMISSION_THREE,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A1
+    LEA     $13000,A1    
+    MOVE.L  (A1),D1
+    SUB.L   #DAMAGE_EMISSION_THREE,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A1
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D1
     LEA     $11000,A1    
@@ -645,10 +652,10 @@ SUB_TWO_SWORDS:
     CMP     D3,D1
     BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
      
-    MOVE.W  (A4),D1
-    SUB.W   #DAMAGE_EMISSION_TWO,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    SUB.L   #DAMAGE_EMISSION_TWO,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
     
     MOVE.W  $11000,D1
     ADD.W   #DAMAGE_EMISSION_TWO,D1
@@ -670,10 +677,10 @@ SUB_ONE_SWORD:
     CMP     D3,D1
     BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
          
-    MOVE.W  (A4),D1
-    SUB.W   #DAMAGE_EMISSION_ONE,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    SUB.L   #DAMAGE_EMISSION_ONE,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
     
     MOVE.W  $11000,D1
     ADD.W   #DAMAGE_EMISSION_ONE,D1
@@ -737,10 +744,10 @@ SUB_THREE_SWORDS_DI:
     MOVE.B  #DAMAGE_EMISSION_THREE,D2
     MOVE.B  (A1),D3
     MULU    D2,D3    
-    MOVE.W  (A4),D1
-    SUB.W   D3,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    SUB.L   D3,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D2
     CLR     D3
@@ -774,10 +781,10 @@ SUB_TWO_SWORDS_DI:
     MOVE.B  #DAMAGE_EMISSION_TWO,D2
     MOVE.B  (A1),D3
     MULU    D2,D3    
-    MOVE.W  (A4),D1
-    SUB.W   D3,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    SUB.L   D3,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D2
     CLR     D3
@@ -812,10 +819,10 @@ SUB_ONE_SWORD_DI:
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
     MOVE.B  (A1),D3
     MULU    D2,D3    
-    MOVE.W  (A4),D1
-    SUB.W   D3,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    SUB.L   D3,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D1
     CLR     D2
@@ -1111,15 +1118,22 @@ FULLY_REST:
     MOVE.W  D1,$9000
     LEA     $9000,A6
 
+                            *IF THE EMISSION IS TOO HIGH, END GAME
+    CLR     D1
+    LEA     $13000,A1
+    MOVE.L  (A1),D1
+    CMP     #60000,D1
+    BHS     YOU_LOST
                             *INCREMENTS THE EMISSION
+
     CLR     D1
     CLR     D2
     MOVE.W  #EMISSION_INC,D2
     MULU    #20,D2
-    MOVE.W  (A4),D1
-    ADD.W   D2,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    ADD.L   D2,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
                             *INCREMENTS THE ENEMIES
     CLR     D1
     MOVE.W  (A3),D1
@@ -1142,12 +1156,20 @@ NAP:
     MOVE.W  D1,$9000
     LEA     $9000,A6
     
+                                *IF THE EMISSION IS TOO HIGH, END GAME
+    CLR     D1
+    CLR     D2
+    LEA     $13000,A1
+    MOVE.L  (A1),D1
+    CMP     #60000,D1
+    BHI     YOU_LOST
+    
                                 *INCREMENTS THE EMISSION
     CLR     D1
-    MOVE.W  (A4),D1
-    ADD.W   #EMISSION_INC,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
+    MOVE.L  (A4),D1
+    ADD.L   #EMISSION_INC,D1
+    MOVE.L  D1,$13000
+    LEA     $13000,A4
                             *INCREMENTS THE ENEMIES
     CLR     D1
     MOVE.W  (A3),D1
@@ -1158,6 +1180,22 @@ NAP:
     *RESET FATIGUE
     JMP     GAMELOOP
     
+YOU_LOST:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    LEA     LOST_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    
+    CMP     #1,D1
+    BEQ     START     
+    
+    BSR     END
 
 
 *-------------------------------------------------------
@@ -1179,7 +1217,46 @@ WELCOME_MSG:    DC.B    '---------------------------------------.---------------
                 DC.B    $0D,$0A
                 DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '                           PRESS <ENTER> TO START',0
+                DC.B    '                             PRESS <ENTER> TO START',0
+LOST_MSG:       DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    '                                Wan(o) (e)mission '
+                DC.B    $0D,$0A
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                       - The emission levels were too high'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                               for you to handle..'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                   - Maybe we were wrong about you after all.'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                      >  Prove them wrong and try again?  <'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '    <ENTER>  < 1 > to restart                         <ENTER>  < 0 > to EXIT    '
+                DC.B    $0D,$0A
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    '                                       ',0
 STARTING_INFO:  DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
                 DC.B    '               - Welcome swordsman-gozaru,'
