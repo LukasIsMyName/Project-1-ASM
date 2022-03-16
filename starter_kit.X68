@@ -29,6 +29,7 @@ STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
 DAYS_COUNT        EQU 1      INITIAL DAYS PASSED COUNT
 ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
 EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
+ABILITY_LEVEL     EQU 1      INITIAL ABILITY LEVEL
 
 *--------------------------INCREMENTS----------------------------------*
 DAMAGE_EMISSION_ONE   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
@@ -38,8 +39,10 @@ EMISSION_INC      EQU 40     EMISSION INCREMENT FOR EACH ENEMY
 MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
 STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
 STAMINA_DEC_1     EQU 2      STAMINA DEDUCTED ON A KILL WITH 1 SWORD
-STAMINA_DEC_2     EQU 3      STAMINA DEDUCTED ON A KILL WITH 2 SWORDS 
-STAMINA_DEC_3     EQU 5      STAMINA DEDUCTED ON A KILL WITH 3 SWORDS 
+STAMINA_DEC_2     EQU 4      STAMINA DEDUCTED ON A KILL WITH 2 SWORDS 
+STAMINA_DEC_3     EQU 5      STAMINA DEDUCTED ON A KILL WITH 3 SWORDS
+ABILITY_MLTPR     EQU 2      DAMAGE MULTIPLIED ON ABILITY USE
+      
 
 *START OF GAME
 START:
@@ -222,6 +225,7 @@ PICK_1:
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
+    BSR     ENDL
     
     LEA     STYLE_DAMAGE_MSG,A1
     MOVE.B  #14,D0
@@ -230,12 +234,59 @@ PICK_1:
     MOVE.W  #DAMAGE_EMISSION_THREE,D1
     MOVE.W  #3,D0
     TRAP    #15
-    BSR     ENDL       
+    BSR     ENDL
+    BSR     ENDL
+    
+    LEA     STAMINA_NORMAL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #STAMINA_DEC_3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL 
+    
+    LEA     STAMINA_USE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #5*4,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+
+    CLR     D2
+    CLR     D3
+    MOVE.W  #DAMAGE_EMISSION_THREE,D3
+    MOVE.B  #ABILITY_MLTPR,D2
+    LEA     ABILITY_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MULU    D2,D3
+    MOVE.W  D3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    CLR     D1
+    LEA     ABILITY_LEVEL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #ABILITY_LEVEL,D1
+    MOVE.B  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    BSR     ENDL   
     BSR     INITIALS_D
+    
+    
 PICK_2:
     LEA     SECOND_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     BSR     ENDL
     
     LEA     STYLE_DAMAGE_MSG,A1
@@ -246,11 +297,56 @@ PICK_2:
     MOVE.W  #3,D0
     TRAP    #15
     BSR     ENDL
+    BSR     ENDL
+    
+    LEA     STAMINA_NORMAL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #STAMINA_DEC_2,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL 
+    
+    LEA     STAMINA_USE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #4*3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    CLR     D2
+    CLR     D3
+    MOVE.W  #DAMAGE_EMISSION_TWO,D3
+    MOVE.B  #ABILITY_MLTPR,D2
+    LEA     ABILITY_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MULU    D2,D3
+    MOVE.W  D3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    CLR     D1
+    LEA     ABILITY_LEVEL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #ABILITY_LEVEL,D1
+    MOVE.B  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    BSR     ENDL
     BSR     INITIALS_D
 PICK_3:
     LEA     THIRD_PICK,A1
     MOVE.B  #14,D0
     TRAP    #15
+    BSR     ENDL
     BSR     ENDL
     
     LEA     STYLE_DAMAGE_MSG,A1
@@ -260,6 +356,50 @@ PICK_3:
     MOVE.W  #DAMAGE_EMISSION_ONE,D1
     MOVE.W  #3,D0
     TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    LEA     STAMINA_NORMAL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #STAMINA_DEC_1,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL 
+    
+    LEA     STAMINA_USE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.W  #2*3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    CLR     D2
+    CLR     D3
+    MOVE.W  #DAMAGE_EMISSION_ONE,D3
+    MOVE.B  #ABILITY_MLTPR,D2
+    LEA     ABILITY_DAMAGE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MULU    D2,D3
+    MOVE.W  D3,D1
+    MOVE.W  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
+    
+    CLR     D1
+    LEA     ABILITY_LEVEL_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #ABILITY_LEVEL,D1
+    MOVE.B  #3,D0
+    TRAP    #15
+    BSR     ENDL
+    BSR     ENDL
     BSR     ENDL
     BSR     INITIALS_D
  
@@ -519,7 +659,7 @@ SUB_THREE_SWORDS_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_THREE,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -529,7 +669,7 @@ SUB_THREE_SWORDS_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_THREE,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -554,7 +694,7 @@ SUB_TWO_SWORDS_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_TWO,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -564,7 +704,7 @@ SUB_TWO_SWORDS_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_TWO,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -578,7 +718,7 @@ SUB_ONE_SWORD_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #STAMINA_DEC_1,D2
-    MOVE.B  #2,D3
+    MOVE.B  #3,D3
     MULU    D2,D3
     MOVE.B  $7000,D1
     CMP     D1,D3
@@ -590,7 +730,7 @@ SUB_ONE_SWORD_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -601,7 +741,7 @@ SUB_ONE_SWORD_DI:
     CLR     D2
     CLR     D3
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
-    MOVE.B  #2,D3
+    MOVE.B  #ABILITY_MLTPR,D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -929,10 +1069,7 @@ STYLE_MSG:      DC.B    '                           SELECT YOUR FIGHTING STYLE '
                 DC.B    $0D,$0A
                 DC.B    '                                       ',0
 LOOP_MSG:       DC.B    '.',0
-REPLAY_MSG:
-
-
-                DC.B    '   ----------       What do you wish to do?       ----------                                       '
+REPLAY_MSG:     DC.B    '   ----------       What do you wish to do?       ----------                                       '
                 DC.B    $0D,$0A
                 DC.B    '                                                 '
                 DC.B    $0D,$0A
@@ -946,11 +1083,12 @@ REPLAY_MSG:
                 DC.B    $0D,$0A
                 DC.B    '               *Input: 0 to EXIT the game                                                 '
                 DC.B    '                             ',0
-
-HUD_MSG:        DC.B    'SCORE : ',0
 FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
-STYLE_DAMAGE_MSG:       DC.B    '                 > - Your base damage: ',0
-STAMINA_USE_MSG         DC.B    '                 > - Ability stamina use: ',0
+STYLE_DAMAGE_MSG:       DC.B    '                            > - Your base damage: ',0
+STAMINA_NORMAL_MSG:     DC.B    '                           > - Normal stamina use: ',0
+STAMINA_USE_MSG:        DC.B    '                          > - Ability stamina use: ',0
+ABILITY_DAMAGE_MSG:     DC.B    '                           > - Ability damage: ',0
+ABILITY_LEVEL_MSG:      DC.B    '                            > - Ability level: ',0
 FIRST_PICK:             DC.B        'Three swords style(///Santoryu)',0
 SECOND_PICK:            DC.B        'Two swords style(//Nitoryu)',0
 THIRD_PICK:             DC.B        'One sword style(/Ittoryu)',0                       
