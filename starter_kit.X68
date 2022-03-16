@@ -20,9 +20,10 @@
 *-------------------------------------------------------
 EXIT              EQU 0      USED TO EXIT ASSEMBLY PROGRAM
 NEXT_DAY          EQU 4      USED TO CYCLE TO THE NEXT DAY
-STATISTICS        EQU 1
-SHOP              EQU 2
+STATISTICS        EQU 1      
+SHOP              EQU 2      
 ATTACK            EQU 3
+REST              EQU 5
 
 EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
 ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
@@ -33,12 +34,14 @@ ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
 EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
 ABILITY_LEVEL     EQU 1      INITIAL ABILITY LEVEL
 LEVEL_BOUGHT      EQU 1      VAR TO CMP BOUGHT LEVEL WITH OLD LEVEL
+FATIGUE_COUNT     EQU 0      VAR TO CONTROL FATIGUE
+FATIGUE_DEC       EQU 0     VAR TO DECREMENT THE STAMINA WITH
 
 *--------------------------INCREMENTS----------------------------------*
 DAMAGE_EMISSION_ONE   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
 DAMAGE_EMISSION_TWO   EQU 150    BASE DAMAGE MULTIPLIER FOR EMISSION TWO SWORDS
 DAMAGE_EMISSION_THREE   EQU 250  BASE DAMAGE MULTIPLIER FOR EMISSION THREE SWORDS
-EMISSION_INC      EQU 40     EMISSION INCREMENT FOR EACH ENEMY
+EMISSION_INC      EQU 300     EMISSION INCREMENT FOR EACH ENEMY
 MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
 STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
 STAMINA_DEC_1     EQU 2      STAMINA DEDUCTED ON A KILL WITH 1 SWORD
@@ -59,6 +62,8 @@ START:
     MOVE.B  #ABILITY_LEVEL,$4500       ABILITY LEVEL PLACED IN MEMORY 4500
     MOVE.B  #LEVEL_BOUGHT,$4700        ABILITY LEVEL BOUGHT PLACED IN MEMORY 4700
     MOVE.B  #ABILITY_MLTPR,$4800       ABILITY MULTIPLIER PLACED IN MEMORY 4800
+    MOVE.B  #FATIGUE_COUNT,$4600       FATIGUE COUNT PLACED IN MEMORY 4600
+    MOVE.B  #FATIGUE_DEC,$4650         FATIGUE DECREMENT PLACED IN MEMORY 4650 
     LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
     LEA     $7000,A2
@@ -72,7 +77,7 @@ START:
     BSR     STATS
     BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 *GAME LOOP
-    ORG     $2000      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 2000 ONWARDS
+    ORG     $1500      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 2000 ONWARDS
 
 *-------------------------------------------------------
 *-------------------GAME SUBROUTINE---------------------
@@ -120,6 +125,7 @@ INPUT:
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
+    BSR     INCREMENT_FATIGUE_COUNTER
     BSR     CLEAR_SCREEN
     BSR     UPDATE
     BSR     CLEAR_SCREEN
@@ -166,6 +172,8 @@ INITIALS_D:
     BSR     MONEY_DISPLAY
     BSR     ENDL
     BSR     DAYS_DISPLAY
+    BSR     ENDL
+    BSR     FATIGUE_DISPLAY
     BSR     HALT
     JMP     REPLAY
    
@@ -223,6 +231,17 @@ DAYS_DISPLAY:
     MOVE.B  #14,D0
     TRAP    #15
     MOVE.W  #3,D0
+    TRAP    #15
+    RTS
+FATIGUE_DISPLAY:
+    CLR     D1
+    BSR     ENDL
+    LEA     FATIGUE_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    LEA     $4600,A1
+    MOVE.B  (A1),D1
+    MOVE.B  #3,D0
     TRAP    #15
     RTS
     
@@ -422,34 +441,69 @@ PICK_3:
 UPDATE:
     BSR     ENDL            PRINT A CR AND LF
     BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
-    BSR     DECORATE
-    
-                             *INCREMENTS THE DAYS
-    CLR     D1
-    MOVE.W  (A6),D1
-    ADD.W   #1,D1
-    MOVE.W  D1,$9000
-    LEA     $9000,A6
-                             *INCREMENTS THE EMISSION
-    CLR     D1
-    MOVE.W  (A4),D1
-    ADD.W   #EMISSION_INC,D1
-    MOVE.W  D1,$6000
-    LEA     $6000,A4
-                             *INCREMENTS THE ENEMIES
-    CLR     D1
-    MOVE.W  (A3),D1
-    ADD.W   #1,D1
-    MOVE.W  D1,$5000
-    LEA     $5000,A3
+    BSR     DECORATE  
                              *RESETS THE STAMINA
     CLR     D1
+    CLR     D2
+    LEA     $4650,A1
+    MOVE.B  (A1),D2
     MOVE.B  $7000,D1
     MOVE.B  #100,D1
+    SUB.B   D2,D1           *SUBTRACT THE FATIGUE COUNTER FROM RESET
     MOVE.B  D1,$7000
-    LEA     $7000,A2  
+    LEA     $7000,A2
     
     RTS
+    
+INCREMENT_FATIGUE_COUNTER:
+                            *INCREASE COUNTER BY 1 EACH DAY CYCLE
+    CLR     D1
+    LEA     $4600,A1
+    MOVE.B  (A1),D1
+    ADD.B   #1,D1
+    MOVE.B  D1,$4600
+    LEA     $4600,A1
+                            *IF D1 IS 5 DAYS IN A ROW
+    CMP     #5,D1
+    BEQ     FATIGUE_DE
+
+    RTS
+FATIGUE_DE:
+
+    CLR     D1
+    CLR     D2
+    LEA     $4650,A2
+    LEA     $7000,A1
+                        
+    MOVE.B  (A2),D2         *INCREASE DECREMENT VALUE BY 10
+    ADD.B   #10,D2
+    MOVE.B  D2,$4650
+    LEA     $4650,A2
+    
+    MOVE.W  (A1),D1         *DECREASE MAX STAMINA BY 10
+    SUB.W   D2,D1
+    MOVE.W  D1,$7000
+    LEA     $7000,A1
+                            *RESET FATIGUE COUNTER
+    CLR     D1
+    LEA     $4600,A1
+    MOVE.B  (A1),D1
+    MOVE.B  #0,D1
+    MOVE.B  D1,$4600
+    LEA     $4600,A1
+    
+    RTS
+    
+RESTED:
+    CLR     D1
+    LEA     $4600,A1
+    MOVE.B  (A1),D1
+    MOVE.B  #0,D1
+    MOVE.B  D1,$4600
+    LEA     $4600,A1
+    JMP     GAMELOOP
+        
+    
 *-------------------------------------------------------
 *-----------------ATTACK MODE--------------------
 *------------------------------------------------------- 
@@ -1028,10 +1082,13 @@ REPLAY:
     CMP     #ATTACK,D1
     BEQ     ATTACK_EMISSION
     
-    CMP     #NEXT_DAY,D1
-    BEQ     GAMELOOP
+    CMP     #REST,D1
+    BEQ     FULLY_REST
     
-    BSR     GAMELOOP
+    CMP     #NEXT_DAY,D1
+    BEQ     NAP
+    
+    JMP     REPLAY
 
 ENDL:
     MOVEM.L D0/A1,-(A7)
@@ -1040,7 +1097,69 @@ ENDL:
     TRAP    #15
     MOVEM.L (A7)+,D0/A1
     RTS
+FULLY_REST:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+
+*ADD MORE ENEMIES AND EMISSION FOR FULL REST
+         *DAYS AND RESET STAMINA
+                              *INCREMENTS THE DAYS
+    CLR     D1
+    MOVE.W  (A6),D1
+    ADD.W   #3,D1
+    MOVE.W  D1,$9000
+    LEA     $9000,A6
+
+                            *INCREMENTS THE EMISSION
+    CLR     D1
+    CLR     D2
+    MOVE.W  #EMISSION_INC,D2
+    MULU    #20,D2
+    MOVE.W  (A4),D1
+    ADD.W   D2,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                            *INCREMENTS THE ENEMIES
+    CLR     D1
+    MOVE.W  (A3),D1
+    ADD.W   #20,D1
+    MOVE.W  D1,$5000
+    LEA     $5000,A3
     
+    *RESET FATIGUE
+    JMP     RESTED
+    
+NAP:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    
+                              *INCREMENTS THE DAYS
+    CLR     D1
+    MOVE.W  (A6),D1
+    ADD.W   #1,D1
+    MOVE.W  D1,$9000
+    LEA     $9000,A6
+    
+                                *INCREMENTS THE EMISSION
+    CLR     D1
+    MOVE.W  (A4),D1
+    ADD.W   #EMISSION_INC,D1
+    MOVE.W  D1,$6000
+    LEA     $6000,A4
+                            *INCREMENTS THE ENEMIES
+    CLR     D1
+    MOVE.W  (A3),D1
+    ADD.W   #5,D1
+    MOVE.W  D1,$5000
+    LEA     $5000,A3
+    
+    *RESET FATIGUE
+    JMP     GAMELOOP
+    
+
+
 *-------------------------------------------------------
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
@@ -1155,17 +1274,17 @@ REPLAY_MSG:     DC.B    '.------------------------------- PICK YOUR FATE -------
                 DC.B    $0D,$0A
                 DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '              - - > <ENTER>: 1 to display the current stats '
+                DC.B    '              - - > <ENTER>: 1 to display the stats GUI '
                 DC.B    $0D,$0A
                 DC.B    '              - - > <ENTER>: 2 to open the shop GUI    '
                 DC.B    $0D,$0A
                 DC.B    '              - - > <ENTER>: 3 to enter the battlefield  '
                 DC.B    $0D,$0A
-                DC.B    '              - - > <ENTER>: 4 to sleep until the next morning'
+                DC.B    '              - - > <ENTER>: 4 to take a nap'
+                DC.B    $0D,$0A
+                DC.B    '              - - > <ENTER>: 5 to fully rest'
                 DC.B    $0D,$0A
                 DC.B    '              - - > <ENTER>: 0 to EXIT the game '
-                DC.B    $0D,$0A
-                DC.B    ''
                 DC.B    $0D,$0A
                 DC.B    ''
                 DC.B    $0D,$0A
@@ -1189,6 +1308,7 @@ STARTER_MSG:            DC.B    '.-----------------------------------. STATS .--
 ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
 STAMINA_MSG:            DC.B    '                                > - STAMINA: ',0
 MONEY_MSG:              DC.B    '                                > - BALANCE: ',0
+FATIGUE_MSG:            DC.B    '                             > - FATIGUE LEVEL: ',0
 SHOP_ITEM1_MSG:         DC.B    ' < 1 > - Ability upgrade: 1000 GOLD ',0
 NO_MONEY_MSG:           DC.B    '          >>> Insuficient funds, try again after killing a few Amanto <<<',0
 ASK_MSG:                DC.B    '                        Play?'
@@ -1569,6 +1689,7 @@ PAGE_SIZE:              DC.B    '---------------------------------------.-------
 
                        
     END START
+
 
 
 
