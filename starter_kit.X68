@@ -1283,7 +1283,7 @@ LORE1_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    '          one in between theeth, clenched for grip and utilization of '
                         DC.B    $0D,$0A
-                        DC.B    '              immense jaw strength, following thoroughly trained'
+                        DC.B    '              extreme jaw strength, following thoroughly trained'
                         DC.B    $0D,$0A
                         DC.B    '                  neck muscles to move the sword as pleased.'
                         DC.B    $0D,$0A
@@ -1291,7 +1291,7 @@ LORE1_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    ''
+                        DC.B    '                            - Only for tthe worthy -'
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
@@ -1404,15 +1404,15 @@ LORE3_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    '           '
                         DC.B    $0D,$0A
-                        DC.B    '       - Legendary swordsman style, required immense strength and skill        '
+                        DC.B    '         - The classic one sword, one man combo that would kneel many        '
                         DC.B    $0D,$0A
-                        DC.B    '              to utilize three swords at once - two in the palms,'
+                        DC.B    '                 to the ground without even noticing the blade'
                         DC.B    $0D,$0A
-                        DC.B    '          one in between theeth, clenched for grip and utilization of '
+                        DC.B    '                        being drawn out of the scabbard. '
                         DC.B    $0D,$0A
-                        DC.B    '              immense jaw strength, following thoroughly trained'
+                        DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '                  neck muscles to move the sword as pleased.'
+                        DC.B    ''
                         DC.B    $0D,$0A
                         DC.B    '           '
                         DC.B    $0D,$0A

@@ -2,17 +2,17 @@
 
 1. Leave swordsmans part to fight carbon emission
 +	- Pick sword style
-	- Each sword style has different damage to the emission resulting in greater use of stamina
++	- Each sword style has different damage to the emission resulting in greater use of stamina
 	- Buy new swords for more damage towards emission
 
 2. Create mobs that creates the emission
-	- Mobs spawns as the day passes
-	- Adds to the emission total
++	- Mobs spawns as the day passes
++	- Adds to the emission total
 	- The total mobs left after the day cycle, increments the emission
 
 3. Stamina to fight mobs for the day
-	- More stamina = more opportunities to slaughter mobs
-	- Stamina regenerates as the day passes
++	- More stamina = more opportunities to slaughter mobs
++	- Stamina regenerates as the day passes
 	- Stamina increases every 3 cycles by +10
 
 4. Conditions:
