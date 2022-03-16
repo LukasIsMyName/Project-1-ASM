@@ -24,12 +24,13 @@ ATTACK            EQU 3
 
 EMISSION_COUNT    EQU 30000  CARBON EMISSION COUNT
 ENEMY_COUNT       EQU 200    INITIAL ENEMY COUNT
-MONEY_COUNT       EQU 150    INITIAL MONEY COUNT
+MONEY_COUNT       EQU 1500    INITIAL MONEY COUNT
 STAMINA_COUNT     EQU 100    INITIAL STAMINA COUNT
 DAYS_COUNT        EQU 1      INITIAL DAYS PASSED COUNT
 ENEMIES_DEFEATED  EQU 0      INITIAL DEFEAT COUNT FOR THE DAY
 EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
 ABILITY_LEVEL     EQU 1      INITIAL ABILITY LEVEL
+LEVEL_BOUGHT      EQU 1      VAR TO CMP BOUGHT LEVEL WITH OLD LEVEL
 
 *--------------------------INCREMENTS----------------------------------*
 DAMAGE_EMISSION_ONE   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
@@ -53,6 +54,9 @@ START:
     MOVE.W  #DAYS_COUNT,$9000          DAYS COUNT PLACED IN MEMORY 9000
     MOVE.W  #ENEMIES_DEFEATED,$10000   ENEMIES DEFEATED COUNT PLACED IN MEMORY 10000
     MOVE.W  #EMISSION_SLASHED,$11000   EMISSION SLASHED COUNT PLACED IN MEMORY 11000
+    MOVE.B  #ABILITY_LEVEL,$4500       ABILITY LEVEL PLACED IN MEMORY 4500
+    MOVE.B  #LEVEL_BOUGHT,$4700        ABILITY LEVEL BOUGHT PLACED IN MEMORY 4700
+    MOVE.B  #ABILITY_MLTPR,$4800       ABILITY MULTIPLIER PLACED IN MEMORY 4800
     LEA     $6000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
     LEA     $7000,A2
@@ -257,8 +261,9 @@ PICK_1:
 
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.W  #DAMAGE_EMISSION_THREE,D3
-    MOVE.B  #ABILITY_MLTPR,D2
+    MOVE.B  (A1),D2
     LEA     ABILITY_DAMAGE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -273,7 +278,8 @@ PICK_1:
     LEA     ABILITY_LEVEL_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
-    MOVE.B  #ABILITY_LEVEL,D1
+    LEA     $4500,A1
+    MOVE.B  (A1),D1
     MOVE.B  #3,D0
     TRAP    #15
     BSR     ENDL
@@ -319,8 +325,9 @@ PICK_2:
     
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.W  #DAMAGE_EMISSION_TWO,D3
-    MOVE.B  #ABILITY_MLTPR,D2
+    MOVE.B  (A1),D2
     LEA     ABILITY_DAMAGE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -335,7 +342,8 @@ PICK_2:
     LEA     ABILITY_LEVEL_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
-    MOVE.B  #ABILITY_LEVEL,D1
+    LEA     $4500,A1
+    MOVE.B  (A1),D1
     MOVE.B  #3,D0
     TRAP    #15
     BSR     ENDL
@@ -379,8 +387,9 @@ PICK_3:
     
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.W  #DAMAGE_EMISSION_ONE,D3
-    MOVE.B  #ABILITY_MLTPR,D2
+    MOVE.B  (A1),D2
     LEA     ABILITY_DAMAGE_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
@@ -395,7 +404,8 @@ PICK_3:
     LEA     ABILITY_LEVEL_MSG,A1
     MOVE.B  #14,D0
     TRAP    #15
-    MOVE.B  #ABILITY_LEVEL,D1
+    LEA     $4500,A1
+    MOVE.B  (A1),D1
     MOVE.B  #3,D0
     TRAP    #15
     BSR     ENDL
@@ -404,13 +414,14 @@ PICK_3:
     BSR     INITIALS_D
  
 *-------------------------------------------------------
-*----------------UPDATE QUEST PROGRESS------------------
-*  COMPLETE QUEST
+*----------------UPDATE------------------
+* 
 *------------------------------------------------------- 
 UPDATE:
     BSR     ENDL            PRINT A CR AND LF
     BSR     DECORATE        DECORATE WITH DOTS USING A LOOP
     BSR     DECORATE
+    
                              *INCREMENTS THE DAYS
     CLR     D1
     MOVE.W  (A6),D1
@@ -434,7 +445,8 @@ UPDATE:
     MOVE.B  $7000,D1
     MOVE.B  #100,D1
     MOVE.B  D1,$7000
-    LEA     $7000,A1
+    LEA     $7000,A2  
+    
     RTS
 *-------------------------------------------------------
 *-----------------ATTACK MODE--------------------
@@ -568,7 +580,7 @@ SUB_TWO_SWORDS:
     MOVE.B  STAMINA_DEC_2,D3
     MOVE.B  $7000,D1
     CMP     D3,D1
-    BLT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
+    BGT     NO_STAMINA           *IF STAMINA COST GREATER THAN STAMINA LEFT = NO STAMINA
      
     MOVE.W  (A4),D1
     SUB.W   #DAMAGE_EMISSION_TWO,D1
@@ -658,8 +670,9 @@ SUB_THREE_SWORDS_DI:
                                 *DECREMENTS EMISSION TOTAL
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_THREE,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -668,8 +681,9 @@ SUB_THREE_SWORDS_DI:
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_THREE,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -693,8 +707,9 @@ SUB_TWO_SWORDS_DI:
                                 *DECREMENTS EMISSION TOTAL
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_TWO,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -703,8 +718,9 @@ SUB_TWO_SWORDS_DI:
                                 *INCREMENTS EMISSION SLASHED COUNT
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_TWO,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -729,8 +745,9 @@ SUB_ONE_SWORD_DI:
                                 *DECREMENTS EMISSION TOTAL
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  (A4),D1
     SUB.W   D3,D1
@@ -740,8 +757,9 @@ SUB_ONE_SWORD_DI:
     CLR     D1
     CLR     D2
     CLR     D3
+    LEA     $4800,A1
     MOVE.B  #DAMAGE_EMISSION_ONE,D2
-    MOVE.B  #ABILITY_MLTPR,D3
+    MOVE.B  (A1),D3
     MULU    D2,D3    
     MOVE.W  $11000,D1
     ADD.W   D3,D1
@@ -789,10 +807,54 @@ SHOP_ENTER:
     MOVE.B  #14,D0
     TRAP    #15
     BSR     MONEY_DISPLAY
-    BSR     HALT
+    BSR     ENDL
+    BSR     ENDL
+    BSR     ENDL
+    LEA     SHOP_ITEM1_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     ENDL
+    CLR     D1
+    MOVE.B  #4,D0
+    TRAP    #15
+    CMP     #1,D1
+    BEQ     BOUGHT_ABILITY_LEVEL
+    
     BSR     DECORATE
     JMP     REPLAY
-
+    
+BOUGHT_ABILITY_LEVEL:
+    CLR     D1
+    CLR     D2
+    LEA     $8000,A1
+    MOVE.W  (A1),D1
+    MOVE.W  #1500,D2
+    CMP     D2,D1
+    BLT     NOT_ENOUGH_MONEY
+    
+    CLR     D1
+    CLR     D2
+    LEA     $4800,A1
+    LEA     $4500,A0
+    MOVE.B  (A1),D1
+    MOVE.B  (A0),D2
+    ADD.B   #1,D1
+    ADD.B   #1,D2
+    MOVE.B  D1,$4800
+    MOVE.B  D2,$4500
+    LEA     $4800,A1
+    LEA     $4500,A0
+    JMP     SHOP_ENTER
+NOT_ENOUGH_MONEY:
+    BSR     ENDL
+    BSR     ENDL
+    LEA     NO_MONEY_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    BSR     HALT
+    JMP     SHOP_ENTER
+          
+    
 *-------------------------------------------------------
 *-----------------HEADS UP DISPLAY (SCORE)--------------
 * RETRIEVES THE SCORE FROM MEMORY LOCATION
@@ -807,7 +869,7 @@ HUD:
 
 *-------------------------------------------------------
 *--------------------------LOOP-------------------------
-*-------------------------------------------------------
+*   -------------------------------------------------------
 LOOP:
     MOVE.B  #5, D3 LOOP COUNTER D3=5
 NEXT:
@@ -1099,6 +1161,8 @@ STARTER_MSG:            DC.B    '.-----------------------------------. STATS .--
 ENEMIES_MSG:            DC.B    '                              > - AMANTO ALIVE: ',0
 STAMINA_MSG:            DC.B    '                                > - STAMINA: ',0
 MONEY_MSG:              DC.B    '                                > - BALANCE: ',0
+SHOP_ITEM1_MSG:         DC.B    ' < 1 > - Ability upgrade: 1000 GOLD ',0
+NO_MONEY_MSG:           DC.B    '          >>> Insuficient funds, try again after killing a few Amanto <<<',0
 ASK_MSG:                DC.B    '                        Play?'
                         DC.B    $0D,$0A
                         DC.B    '                 To Play enter any number            '
