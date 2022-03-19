@@ -9,10 +9,10 @@
 * where you pick swords to fight the carbon emission instead of the standard.
 
 *-------------------------------------------------------
-* STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
+* STARTING MEMORY ADDRESS FOR THE PROGRAMME $900
 *-------------------------------------------------------
     
-    ORG $1000
+    ORG $900
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED, MODIFY AS NEEDED
@@ -35,19 +35,22 @@ EMISSION_SLASHED  EQU 0      INITIAL EMISSION SLASHED COUNT FOR THE DAY
 ABILITY_LEVEL     EQU 1      INITIAL ABILITY LEVEL
 LEVEL_BOUGHT      EQU 1      VAR TO CMP BOUGHT LEVEL WITH OLD LEVEL
 FATIGUE_COUNT     EQU 0      VAR TO CONTROL FATIGUE
-FATIGUE_DEC       EQU 0     VAR TO DECREMENT THE STAMINA WITH
+FATIGUE_DEC       EQU 0      VAR TO DECREMENT THE STAMINA WITH
+BONUS_COUNT_10    EQU 0      VAR TO CONTROL 10 DAYS BONUS
+BONUS_COUNT_20    EQU 0      VAR TO CONTROL 20 DAYS BONUS
 
 *--------------------------INCREMENTS----------------------------------*
-DAMAGE_EMISSION_ONE   EQU 75     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
-DAMAGE_EMISSION_TWO   EQU 150    BASE DAMAGE MULTIPLIER FOR EMISSION TWO SWORDS
-DAMAGE_EMISSION_THREE   EQU 250  BASE DAMAGE MULTIPLIER FOR EMISSION THREE SWORDS
+DAMAGE_EMISSION_ONE   EQU 30     BASE DAMAGE MULTIPLIER FOR EMISSION ONE SWORD
+DAMAGE_EMISSION_TWO   EQU 65    BASE DAMAGE MULTIPLIER FOR EMISSION TWO SWORDS
+DAMAGE_EMISSION_THREE EQU 110  BASE DAMAGE MULTIPLIER FOR EMISSION THREE SWORDS
 EMISSION_INC      EQU 300     EMISSION INCREMENT FOR EACH ENEMY
-MONEY_INC         EQU 5      MONEY INCREMENT FOR EACH KILL
+MONEY_INC         EQU 15      MONEY INCREMENT FOR EACH KILL
 STAMINA_INC       EQU 10     STAMINA INCREMENT FOR EACH 5 DAY CYCLES
 STAMINA_DEC_1     EQU 2      STAMINA DEDUCTED ON A KILL WITH 1 SWORD
 STAMINA_DEC_2     EQU 4      STAMINA DEDUCTED ON A KILL WITH 2 SWORDS 
 STAMINA_DEC_3     EQU 5      STAMINA DEDUCTED ON A KILL WITH 3 SWORDS
 ABILITY_MLTPR     EQU 2      DAMAGE MULTIPLIED ON ABILITY USE
+ENEMY_INC         EQU 5      ENEMY INCREMENT
       
 
 *START OF GAME
@@ -63,7 +66,11 @@ START:
     MOVE.B  #LEVEL_BOUGHT,$4700        ABILITY LEVEL BOUGHT PLACED IN MEMORY 4700
     MOVE.B  #ABILITY_MLTPR,$4800       ABILITY MULTIPLIER PLACED IN MEMORY 4800
     MOVE.B  #FATIGUE_COUNT,$4600       FATIGUE COUNT PLACED IN MEMORY 4600
-    MOVE.B  #FATIGUE_DEC,$4650         FATIGUE DECREMENT PLACED IN MEMORY 4650 
+    MOVE.B  #FATIGUE_DEC,$4650         FATIGUE DECREMENT PLACED IN MEMORY 4650
+    MOVE.B  #MONEY_INC,$4400           MONEY INCREMENT PLACED IN MEMORY 4400
+    MOVE.B  #BONUS_COUNT_10,$4350      BONUS COUNT PLACED IN MEMORY 4350
+    MOVE.B  #BONUS_COUNT_20,$4370      BONUS COUNT PLACED IN MEMORY 4370
+    MOVE.B  #ENEMY_INC,$3000           ENEMY INCREMENT PLACED IN MEMORY 9000
     LEA     $13000,A4        LOAD THE ADDRESS REGISTERS
     LEA     $5000,A3
     LEA     $7000,A2
@@ -78,7 +85,7 @@ START:
     BSR     STATS
     BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 *GAME LOOP
-    ORG     $1500      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 2000 ONWARDS
+    ORG     $1050      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 1100 ONWARDS
 
 *-------------------------------------------------------
 *-------------------GAME SUBROUTINE---------------------
@@ -209,7 +216,8 @@ ENEMY_DISPLAY:                         *** DISPLAY THE INITIAL ENEMY COUNT
 STAMINA_DISPLAY:
     CLR     D1
     BSR     ENDL
-    MOVE.B  (A2),D4
+    LEA     $7000,A1
+    MOVE.B  (A1),D4
     MOVE.B  D4,D1
     LEA     STAMINA_MSG,A1
     MOVE.B  #14,D0
@@ -456,9 +464,60 @@ UPDATE:
     MOVE.B  (A1),D2
     MOVE.B  $7000,D1
     MOVE.B  #100,D1
-    SUB.B   D2,D1           *SUBTRACT THE FATIGUE COUNTER FROM RESET
+    SUB.B   D2,D1           *SUBTRACT THE FATIGUE COUNTER FROM RESETED STAMINA
     MOVE.B  D1,$7000
     LEA     $7000,A2
+                            *IF BONUS ACTIVATED ONCE, DON'T PROCEED TO THE NEXT BLOCK
+    CLR     D1
+    LEA     $4350,A1
+    MOVE.B  (A1),D1
+    CMP     #1,D1
+    BEQ     REPLAY
+                            *IF 10 OR MORE DAYS PASSED, DAY_10 INCREASE
+    CLR     D1
+    LEA     $4600,A1
+    MOVE.B  (A1),D1
+    CMP     #10,D1
+    BGE     DAY_10
+    
+    RTS
+DAY_10:
+                           *ADD TO THE COUNTER TO CONTROL
+    CLR     D1
+    LEA     $4350,A1
+    MOVE.B  (A1),D1
+    ADD.B   #1,D1
+    MOVE.B  D1,$4350
+    LEA     $4350,A1
+                           *DOUBLE COIN INCREASE
+    CLR     D1
+    LEA     $4400,A1
+    MOVE.B  (A1),D1
+    MULU    #2,D1
+    MOVE.B  D1,$4400
+    LEA     $4400,A1
+    
+                            *1000 GOLD BONUS
+    CLR     D1
+    LEA     $8000,A1
+    MOVE.W  (A1),D1
+    ADD.W   #1000,D1
+    MOVE.W  D1,$8000
+    LEA     $8000,A1
+                            *ENEMY INC INCREASE
+    CLR     D1
+    LEA     $9000,A1
+    MOVE.B  (A1),D1
+    MULU    #2,D1
+    MOVE.B  D1,$9000
+    LEA     $9000,A1
+    
+    BSR     CLEAR_SCREEN
+    LEA     BONUS_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
     
     RTS
     
@@ -525,6 +584,13 @@ ATTACK_EMISSION:
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
+                            *IF EMISSION <=0, VICTORY SCREEN
+    CLR     D1
+    LEA     $13000,A1
+    MOVE.L  (A1),D1
+    CMP     #0,D1
+    BLS     YOU_WIN
+    
     
     LEA     ENEMIES_KILLED_TODAY,A1
     MOVE.B  #14,D0
@@ -590,9 +656,12 @@ ATTACK_ENEMY:
     LEA     $10000,A1
                             *INCREMENT THE MONEY COUNT FOR EACH KILL
     CLR     D1
+    CLR     D2
+    LEA     $4400,A2
     LEA     $8000,A1
     MOVE.W  (A1),D1
-    ADD.W   #MONEY_INC,D1
+    MOVE.B  (A2),D2
+    ADD.W   D2,D1
     MOVE.W  D1,$8000
     LEA     $8000,A1
     
@@ -931,18 +1000,6 @@ NOT_ENOUGH_MONEY:
     BSR     HALT
     JMP     SHOP_ENTER
           
-    
-*-------------------------------------------------------
-*-----------------HEADS UP DISPLAY (SCORE)--------------
-* RETRIEVES THE SCORE FROM MEMORY LOCATION
-*-------------------------------------------------------   
-HUD:
-
-    BSR     ENDL
-    BSR     DECORATE
-    CLR     D1
-    BSR     DECORATE
-    RTS
 
 *-------------------------------------------------------
 *--------------------------LOOP-------------------------
@@ -1124,20 +1181,27 @@ FULLY_REST:
     MOVE.L  (A1),D1
     CMP     #60000,D1
     BHS     YOU_LOST
+                            *IF EMISSION IS <=0, VICTORY SCREEN
+    CMP     #0,D1
+    BLS     YOU_WIN
                             *INCREMENTS THE EMISSION
 
     CLR     D1
     CLR     D2
     MOVE.W  #EMISSION_INC,D2
-    MULU    #20,D2
+    MULU    #10,D2
     MOVE.L  (A4),D1
     ADD.L   D2,D1
     MOVE.L  D1,$13000
     LEA     $13000,A4
                             *INCREMENTS THE ENEMIES
+    CLR     D3
+    LEA     $3000,A1
+    MOVE.W  (A1),D3
     CLR     D1
+    LEA     $5000,A3
     MOVE.W  (A3),D1
-    ADD.W   #20,D1
+    ADD.W   D3,D1
     MOVE.W  D1,$5000
     LEA     $5000,A3
     
@@ -1156,13 +1220,18 @@ NAP:
     MOVE.W  D1,$9000
     LEA     $9000,A6
     
-                                *IF THE EMISSION IS TOO HIGH, END GAME
+                               *IF THE EMISSION IS TOO HIGH, END GAME
     CLR     D1
     CLR     D2
     LEA     $13000,A1
     MOVE.L  (A1),D1
     CMP     #60000,D1
     BHI     YOU_LOST
+    
+                              *IF EMISSION IS <=0, VICTORY SCREEN
+    CMP     #0,D1
+    BLS     YOU_WIN
+
     
                                 *INCREMENTS THE EMISSION
     CLR     D1
@@ -1172,8 +1241,12 @@ NAP:
     LEA     $13000,A4
                             *INCREMENTS THE ENEMIES
     CLR     D1
+    CLR     D2
+    LEA     $3000,A1
+    LEA     $5000,A3
+    MOVE.B  (A1),D2
     MOVE.W  (A3),D1
-    ADD.W   #5,D1
+    ADD.W   D2,D1
     MOVE.W  D1,$5000
     LEA     $5000,A3
     
@@ -1194,6 +1267,23 @@ YOU_LOST:
     
     CMP     #1,D1
     BEQ     START     
+    
+    BSR     END
+YOU_WIN:
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    BSR     DECORATE
+    BSR     CLEAR_SCREEN
+    
+    LEA     WON_MSG,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    MOVE.B  #4,D0
+    TRAP    #15
+    
+    CMP     #1,D1
+    BEQ     START
     
     BSR     END
 
@@ -1257,6 +1347,46 @@ LOST_MSG:       DC.B    '---------------------------------------.---------------
                 DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
                 DC.B    '                                       ',0
+WON_MSG:        DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    '                                Wan(o) (e)mission '
+                DC.B    $0D,$0A
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                    - All hail the mightiest warrior in Wano!'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '  - You have succeeded in defending Wano kingdom and saved earth atmosphere'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '           - We hereby declare that you are one of us, samurai-gozaru.'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '                   - Do you wish to re-live the nightmare again?'
+                DC.B    $0D,$0A
+                DC.B    ''
+                DC.B    $0D,$0A
+                DC.B    '    <ENTER>  < 1 > to restart                         <ENTER>  < 0 > to EXIT    '
+                DC.B    $0D,$0A
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    '                                       ',0
+
 STARTING_INFO:  DC.B    '---------------------------------------.----------------------------------------'
                 DC.B    $0D,$0A
                 DC.B    '               - Welcome swordsman-gozaru,'
@@ -1367,7 +1497,9 @@ REPLAY_MSG:     DC.B    '.------------------------------- PICK YOUR FATE -------
                 DC.B    $0D,$0A
                 DC.B    ''
                 DC.B    $0D,$0A
-                DC.B    '---------------------------------------.----------------------------------------',0
+                DC.B    '---------------------------------------.----------------------------------------'
+                DC.B    $0D,$0A
+                DC.B    '                                       ',0
 
 FIGHTING_STYLE_MSG:     DC.B    '                 > - Your fighting style: ',0
 STYLE_DAMAGE_MSG:       DC.B    '                            > - Your base damage: ',0
@@ -1488,7 +1620,7 @@ LORE1_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '                            - Only for tthe worthy -'
+                        DC.B    '                            - Only for the worthy -'
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
@@ -1699,7 +1831,7 @@ RECONSIDER_MSG:         DC.B    '---------------------------------------.-------
                         DC.B    ''
                         DC.B    $0D,$0A
                         DC.B    '---------------------------------------.----------------------------------------',0                 
-PAGE_SIZE:              DC.B    '---------------------------------------.----------------------------------------'
+BONUS_MSG:              DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
@@ -1729,7 +1861,7 @@ PAGE_SIZE:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    '-                                     mid                                      -'
+                        DC.B    '-                           -- 10 DAY BONUS UNLOCKED --                        -'
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
@@ -1766,6 +1898,7 @@ PAGE_SIZE:              DC.B    '---------------------------------------.-------
 
                        
     END START
+
 
 
 
