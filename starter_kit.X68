@@ -12,7 +12,7 @@
 * STARTING MEMORY ADDRESS FOR THE PROGRAMME $900
 *-------------------------------------------------------
     
-    ORG $900
+    ORG $800
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED, MODIFY AS NEEDED
@@ -85,7 +85,7 @@ START:
     BSR     STATS
     BSR     GAME       BRANCH TO THE GAME SUBROUTINE
 *GAME LOOP
-    ORG     $1050      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 1100 ONWARDS
+    ORG     $950      THE REST OF THE PROGRAM IS TO BE LOCATED FROM 1100 ONWARDS
 
 *-------------------------------------------------------
 *-------------------GAME SUBROUTINE---------------------
@@ -475,8 +475,8 @@ UPDATE:
     BEQ     REPLAY
                             *IF 10 OR MORE DAYS PASSED, DAY_10 INCREASE
     CLR     D1
-    LEA     $4600,A1
-    MOVE.B  (A1),D1
+    LEA     $9000,A1
+    MOVE.W  (A1),D1
     CMP     #10,D1
     BGE     DAY_10
     
@@ -506,11 +506,11 @@ DAY_10:
     LEA     $8000,A1
                             *ENEMY INC INCREASE
     CLR     D1
-    LEA     $9000,A1
+    LEA     $3000,A1
     MOVE.B  (A1),D1
     MULU    #2,D1
-    MOVE.B  D1,$9000
-    LEA     $9000,A1
+    MOVE.B  D1,$3000
+    LEA     $3000,A1
     
     BSR     CLEAR_SCREEN
     LEA     BONUS_MSG,A1
@@ -1006,12 +1006,7 @@ NOT_ENOUGH_MONEY:
 *   -------------------------------------------------------
 LOOP:
     MOVE.B  #5, D3 LOOP COUNTER D3=5
-NEXT:
-    LEA     LOOP_MSG,A1
-    MOVE.B  #14,D0
-    TRAP    #15
-	SUB     #1,D3   DECREMENT LOOP COUNTER
-    BNE     NEXT    REPEAT UNTIL D0=0
+
 
 *-------------------------------------------------------
 *------------------SCREEN DECORATION--------------------
@@ -1170,7 +1165,8 @@ FULLY_REST:
          *DAYS AND RESET STAMINA
                               *INCREMENTS THE DAYS
     CLR     D1
-    MOVE.W  (A6),D1
+    LEA     $9000,A1
+    MOVE.W  (A1),D1
     ADD.W   #3,D1
     MOVE.W  D1,$9000
     LEA     $9000,A6
@@ -1215,7 +1211,8 @@ NAP:
     
                               *INCREMENTS THE DAYS
     CLR     D1
-    MOVE.W  (A6),D1
+    LEA     $9000,A1
+    MOVE.W  (A1),D1
     ADD.W   #1,D1
     MOVE.W  D1,$9000
     LEA     $9000,A6
@@ -1855,12 +1852,6 @@ BONUS_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
                         DC.B    '-                           -- 10 DAY BONUS UNLOCKED --                        -'
                         DC.B    $0D,$0A
                         DC.B    ''
@@ -1885,15 +1876,9 @@ BONUS_MSG:              DC.B    '---------------------------------------.-------
                         DC.B    $0D,$0A
                         DC.B    ''
                         DC.B    $0D,$0A
-                        DC.B    ''
+                        DC.B    '---------------------------------------.----------------------------------------'
                         DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
-                        DC.B    ''
-                        DC.B    $0D,$0A
-                        DC.B    '---------------------------------------.----------------------------------------',0
+                        DC.B    '                                       ',0
 
 
                        
